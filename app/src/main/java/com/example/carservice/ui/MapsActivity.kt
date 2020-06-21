@@ -110,7 +110,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun initPlacesApi() {
-        Places.initialize(applicationContext, R.string.places_api_key)
+        Places.initialize(applicationContext, resources.getString(R.string.places_api_key))
         fromAutoCompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
         fromAutoCompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             @Override
