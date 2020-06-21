@@ -1,25 +1,17 @@
-package com.example.carservice.ui
+package com.example.carservice.ui.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
+import android.view.View
 import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.carservice.R
-import com.example.carservice.model.AppartmentsModel
+import com.example.carservice.ui.ApartmentsFeed
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var openMapButton: MaterialButton
-    private lateinit var signInButton: MaterialButton
-    private lateinit var addCardButton: MaterialButton
-
     private lateinit var bottomNavigationView: BottomNavigationView
 
     private val SIGN_IN_REQUEST_CODE = 0
@@ -31,31 +23,13 @@ class MainActivity : AppCompatActivity() {
         initUI()
         initUIActions()
         addFeedFragment()
-//        authenticateUser()
     }
 
     private fun initUI() {
-//        openMapButton = findViewById(R.id.maps_button_id)
-//        signInButton = findViewById(R.id.sign_in_button_id)
-//        addCardButton = findViewById(R.id.open_card_add_button_id)
-
         bottomNavigationView = findViewById(R.id.bottom_navigation_view_id)
     }
 
     private fun initUIActions() {
-//        openMapButton.setOnClickListener {
-//            val mapIntent = Intent(this, MapsActivity::class.java)
-//            startActivity(mapIntent)
-//        }
-//        signInButton.setOnClickListener {
-//            promptUserSignIn()
-//        }
-//
-//        addCardButton.setOnClickListener {
-//            val cardIntent = Intent(this, CardActivity::class.java)
-//            startActivity(cardIntent)
-//        }
-
         bottomNavigationView.setOnNavigationItemSelectedListener {
             if(it.itemId == R.id.feed_menu_id){
                 addFeedFragment()
@@ -65,7 +39,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addFeedFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container_id, ApartmentsFeed.getInstance()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container_id,
+            ApartmentsFeed.getInstance()
+        ).commit()
     }
 
     private fun authenticateUser() {
@@ -106,5 +82,10 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         FirebaseAuth.getInstance().signOut()
         super.onDestroy()
+    }
+
+    fun startAddApartmentActivity(view: View) {
+        val intent = Intent(this, TempAddApartmentActivity::class.java);
+        startActivity(intent)
     }
 }

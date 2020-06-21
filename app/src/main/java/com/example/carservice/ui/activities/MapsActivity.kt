@@ -1,4 +1,4 @@
-package com.example.carservice.ui
+package com.example.carservice.ui.activities
 
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -105,13 +105,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    fun animateCamera(latLng: LatLng, zoom: Float){
+    fun animateCamera(latLng: LatLng, zoom: Float) {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
     }
 
     private fun initPlacesApi() {
         Places.initialize(applicationContext, resources.getString(R.string.places_api_key))
-        fromAutoCompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+        fromAutoCompleteFragment.setPlaceFields(
+            listOf(
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.LAT_LNG
+            )
+        )
         fromAutoCompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             @Override
             override fun onPlaceSelected(place: Place) {
@@ -124,7 +130,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
-        toAutoCompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+        toAutoCompleteFragment.setPlaceFields(
+            listOf(
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.LAT_LNG
+            )
+        )
         toAutoCompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             @Override
             override fun onPlaceSelected(place: Place) {
@@ -158,7 +170,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun drawPath(path: MutableList<LatLng>){
+    private fun drawPath(path: MutableList<LatLng>) {
         mMap.clear()
         if (path.isNotEmpty()) {
             val polylineOpts = PolylineOptions().addAll(path).color(Color.BLUE).width(10F)
@@ -212,8 +224,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-
-
 
     @Override
     override fun onStop() {

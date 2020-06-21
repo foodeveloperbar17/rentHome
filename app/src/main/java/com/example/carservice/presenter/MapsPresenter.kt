@@ -1,6 +1,6 @@
 package com.example.carservice.presenter
 
-import com.example.carservice.ui.MapsActivity
+import com.example.carservice.ui.activities.MapsActivity
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.DirectionsApi

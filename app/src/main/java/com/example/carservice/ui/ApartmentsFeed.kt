@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.carservice.R
-import com.example.carservice.model.AppartmentsModel
+import com.example.carservice.model.Apartment
 
 /**
  * A simple [Fragment] subclass.
@@ -39,11 +39,11 @@ class ApartmentsFeed : Fragment() {
 
     private fun setFeedDataToRecyclerView(view: View){
         val adapter = ApartmentsAdapter()
-        val apartments = ArrayList<AppartmentsModel>()
-        apartments.add(AppartmentsModel("kaloche", "kutaisshi 50 larad", null, null, R.drawable.apart,0, 0.0))
-        apartments.add(AppartmentsModel("kaloche", "kutaisshi 40 larad", null, null, R.drawable.apart,0, 0.0))
-        apartments.add(AppartmentsModel("kaloche", "kutaisshi 30 larad", null, null, R.drawable.apart,0, 0.0))
-        apartments.add(AppartmentsModel("kaloche", "kai xo 20 larad", null, null, R.drawable.apart, 0, 0.0))
+        val apartments = ArrayList<Apartment>()
+        apartments.add(Apartment("kaloche", "kutaisshi 50 larad", 20.0, null, R.drawable.apart,0, 0.0))
+        apartments.add(Apartment("kaloche", "kutaisshi 40 larad", 20.0, null, R.drawable.apart,0, 0.0))
+        apartments.add(Apartment("kaloche", "kutaisshi 30 larad", 20.0, null, R.drawable.apart,0, 0.0))
+        apartments.add(Apartment("kaloche", "kai xo 20 larad", 20.0, null, R.drawable.apart, 0, 0.0))
         adapter.setData(apartments)
         apartmentsRecyclerView.adapter = adapter
         apartmentsRecyclerView.layoutManager = LinearLayoutManager(view.context)
