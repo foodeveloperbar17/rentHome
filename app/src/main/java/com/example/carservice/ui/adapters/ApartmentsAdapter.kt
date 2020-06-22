@@ -1,4 +1,4 @@
-package com.example.carservice.ui
+package com.example.carservice.ui.adapters
 
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -11,7 +11,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.carservice.R
-import com.example.carservice.model.Apartment
+import com.example.carservice.models.Apartment
 
 class ApartmentsAdapter : RecyclerView.Adapter<ApartmentsAdapter.ApartmentsHolder>() {
 
@@ -29,8 +29,8 @@ class ApartmentsAdapter : RecyclerView.Adapter<ApartmentsAdapter.ApartmentsHolde
         holder.setData(apartments[position])
     }
 
-    fun setData(newAppartments: List<Apartment>){
-        apartments = newAppartments
+    fun setData(newApartments: List<Apartment>){
+        apartments = newApartments
         notifyDataSetChanged()
     }
 

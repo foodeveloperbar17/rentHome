@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.carservice.R
-import com.example.carservice.ui.ApartmentsFeed
+import com.example.carservice.ui.fragments.ApartmentsFeedFragment
+import com.example.carservice.ui.fragments.ProfileFragment
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -22,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         initUI()
         initUIActions()
-        addFeedFragment()
+        replaceFragment(ApartmentsFeedFragment.getInstance())
     }
 
     private fun initUI() {
@@ -32,15 +34,17 @@ class MainActivity : AppCompatActivity() {
     private fun initUIActions() {
         bottomNavigationView.setOnNavigationItemSelectedListener {
             if(it.itemId == R.id.feed_menu_id){
-                addFeedFragment()
+                replaceFragment(ApartmentsFeedFragment.getInstance())
+            } else if(it.itemId == R.id.profile_menu_id){
+                replaceFragment(ProfileFragment.getInstance())
             }
             return@setOnNavigationItemSelectedListener true
         }
     }
 
-    private fun addFeedFragment(){
+    private fun replaceFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container_id,
-            ApartmentsFeed.getInstance()
+            fragment
         ).commit()
     }
 

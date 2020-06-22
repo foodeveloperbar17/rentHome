@@ -1,4 +1,4 @@
-package com.example.carservice.model
+package com.example.carservice.models
 
 import com.google.android.gms.maps.model.LatLng
 

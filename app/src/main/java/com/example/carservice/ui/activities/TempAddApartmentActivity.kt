@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import com.example.carservice.R
-import com.example.carservice.model.Apartment
+import com.example.carservice.models.Apartment
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*

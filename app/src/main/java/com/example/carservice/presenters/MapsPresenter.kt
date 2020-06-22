@@ -1,4 +1,4 @@
-package com.example.carservice.presenter
+package com.example.carservice.presenters
 
 import com.example.carservice.ui.activities.MapsActivity
 import com.google.android.gms.location.*

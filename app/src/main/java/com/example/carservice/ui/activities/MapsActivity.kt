@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.carservice.presenter.MapsPresenter
+import com.example.carservice.presenters.MapsPresenter
 import com.example.carservice.R
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
