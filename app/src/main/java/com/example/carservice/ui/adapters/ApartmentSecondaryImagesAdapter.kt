@@ -1,6 +1,7 @@
 package com.example.carservice.ui.adapters
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,7 @@ import com.example.carservice.R
 class ApartmentSecondaryImagesAdapter :
     RecyclerView.Adapter<ApartmentSecondaryImagesAdapter.SecondaryImagesViewHolder>() {
 
-    private var images = ArrayList<Bitmap>()
+    private var images = ArrayList<Drawable>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SecondaryImagesViewHolder {
         return SecondaryImagesViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.secondary_image_layout, parent, false))
@@ -25,7 +26,7 @@ class ApartmentSecondaryImagesAdapter :
         holder.setData(images[position])
     }
 
-    fun setData(images : ArrayList<Bitmap>){
+    fun setData(images : ArrayList<Drawable>){
         this.images = images
     }
 
@@ -33,8 +34,8 @@ class ApartmentSecondaryImagesAdapter :
 
         private var image : ImageView = itemView.findViewById(R.id.secondary_image_view)
 
-        fun setData(bitmap: Bitmap){
-            image.setImageBitmap(bitmap)
+        fun setData(drawable: Drawable){
+            image.setImageDrawable(drawable)
         }
     }
 }

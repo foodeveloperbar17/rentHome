@@ -1,4 +1,4 @@
-package com.example.carservice.ui.fragments
+package com.example.carservice.ui.fragments.apartmentFragments
 
 
 import android.os.Bundle

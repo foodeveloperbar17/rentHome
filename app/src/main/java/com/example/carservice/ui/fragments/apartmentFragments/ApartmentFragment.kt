@@ -1,6 +1,7 @@
-package com.example.carservice.ui.fragments
+package com.example.carservice.ui.fragments.apartmentFragments
 
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 
 import com.example.carservice.R
+import com.example.carservice.models.Apartment
 import com.example.carservice.ui.adapters.ApartmentFragmentStateAdapter
 import com.example.carservice.ui.adapters.ApartmentSecondaryImagesAdapter
 import com.google.android.material.tabs.TabLayout
@@ -24,12 +26,13 @@ class ApartmentFragment : Fragment() {
 
         fun getInstance(): ApartmentFragment {
             if (instance == null) {
-                instance = ApartmentFragment()
+                instance =
+                    ApartmentFragment()
             }
             return instance!!
         }
 
-        public val NUM_TABS = 5
+        const val NUM_TABS = 5
 
 //        to do: change with resources
 
@@ -43,6 +46,9 @@ class ApartmentFragment : Fragment() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
 
+    private var apartment: Apartment? = null
+    private var uiCreated = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,6 +58,8 @@ class ApartmentFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initUI(view)
+        uiCreated = true
+        apartment?.let { displayModel(it) }
     }
 
     private fun initUI(view: View) {
@@ -62,11 +70,12 @@ class ApartmentFragment : Fragment() {
         tabLayout = view.findViewById(R.id.apartment_tab_layout)
         viewPager = view.findViewById(R.id.apartment_view_pager)
 
+        viewPager.adapter = ApartmentFragmentStateAdapter(this)
+
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = "Tab ${tabNames[position]}"
         }.attach()
 
-        viewPager.adapter = ApartmentFragmentStateAdapter(this)
     }
 
     private fun initRecyclerView(view: View) {
@@ -77,7 +86,31 @@ class ApartmentFragment : Fragment() {
             LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
     }
 
-//    to do: add set model
+    fun setModel(apartment: Apartment){
+        this.apartment = apartment
+        if(uiCreated){
+            displayModel(apartment)
+        }
+    }
+
+    private fun displayModel(apartment: Apartment){
+        mainImage.setImageResource(apartment.imagePath!!)
+
+        val arrayList = ArrayList<Drawable>()
+        arrayList.add(resources.getDrawable(apartment.imagePath!!, null)) //check for possible theme
+        arrayList.add(resources.getDrawable(apartment.imagePath!!, null))
+        arrayList.add(resources.getDrawable(apartment.imagePath!!, null))
+        arrayList.add(resources.getDrawable(apartment.imagePath!!, null))
+        arrayList.add(resources.getDrawable(apartment.imagePath!!, null))
+        arrayList.add(resources.getDrawable(apartment.imagePath!!, null))
+        arrayList.add(resources.getDrawable(apartment.imagePath!!, null))
+        otherImagesAdapter.setData(arrayList)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        uiCreated = false
+    }
 
 
 

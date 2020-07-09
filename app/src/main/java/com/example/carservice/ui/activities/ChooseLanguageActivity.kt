@@ -26,9 +26,6 @@ class ChooseLanguageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_language)
 
-//        getSharedPreferences()
-//        getDefaultSharedP
-
         val sharedPreferences = getSharedPreferences(LANGUAGE_PREFERENCES_KEY, Context.MODE_PRIVATE)
         if (sharedPreferences.contains(LANGUAGE_KEY)) {
             startMainActivity()
@@ -45,7 +42,6 @@ class ChooseLanguageActivity : AppCompatActivity() {
 
     private fun initUIActions() {
         georgiaImageView.setOnClickListener {
-
             setLanguage(GEORGIAN_LANGUAGE_CODE)
         }
 
@@ -56,8 +52,9 @@ class ChooseLanguageActivity : AppCompatActivity() {
 
     private fun setLanguage(lang: String) {
         val sharedPreferences = getSharedPreferences(LANGUAGE_PREFERENCES_KEY, Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString(LANGUAGE_KEY, lang)
-
+        val editor = sharedPreferences.edit()
+        editor.putString(LANGUAGE_KEY, lang)
+        editor.apply()
 
         val myLocale = Locale(lang)
 
@@ -67,12 +64,14 @@ class ChooseLanguageActivity : AppCompatActivity() {
 
         conf.setLocale(myLocale)
         resources.updateConfiguration(conf, dm)
+
         startMainActivity()
     }
 
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
 

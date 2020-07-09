@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import com.example.carservice.R
+import com.example.carservice.db.FireDatabase
 import com.example.carservice.models.Apartment
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,8 +20,6 @@ class TempAddApartmentActivity : AppCompatActivity() {
     private lateinit var priceEditText: EditText
     private lateinit var latTextView : EditText
     private lateinit var lngTextView: EditText
-
-    private val apartmentsRef = FirebaseFirestore.getInstance().collection("/apartments")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +46,8 @@ class TempAddApartmentActivity : AppCompatActivity() {
             val price = priceEditText.text.toString().toDouble()
             val lat = latTextView.text.toString().toDouble()
             val lng = lngTextView.text.toString().toDouble()
-            val apartment = Apartment(name, description, price, LatLng(lat, lng))
-            apartmentsRef.document(UUID.randomUUID().toString()).set(apartment)
+            val apartment = Apartment(null, name, description, price, LatLng(lat, lng))
+            FireDatabase.addApartment(apartment)
         }
     }
 }

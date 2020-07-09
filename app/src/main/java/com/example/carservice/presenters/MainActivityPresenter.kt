@@ -1,0 +1,80 @@
+package com.example.carservice.presenters
+
+import android.widget.CompoundButton
+import android.widget.ToggleButton
+import com.example.carservice.R
+import com.example.carservice.db.FireDatabase
+import com.example.carservice.models.Apartment
+import com.example.carservice.models.User
+import com.example.carservice.ui.activities.MainActivity
+import com.example.carservice.ui.fragments.ApartmentsFeedFragment
+import com.firebase.ui.auth.IdpResponse
+import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
+object MainActivityPresenter {
+    private var mainActivity: MainActivity? = null
+    private var apartmentsFeedFragment: ApartmentsFeedFragment? = null
+
+    fun onActivityCreated(mainActivity: MainActivity) {
+        this.mainActivity = mainActivity
+
+        FirebaseAuth.getInstance().currentUser?.let {
+            mainActivity.startLoading()
+            FireDatabase.signInExistingUser(it.uid)
+        }
+    }
+
+    fun onViewCreated(apartmentsFeedFragment: ApartmentsFeedFragment) {
+        this.apartmentsFeedFragment = apartmentsFeedFragment
+    }
+
+    fun fetchData() {
+        FireDatabase.fetchApartments()
+    }
+
+    fun apartmentsFetched(fetchedApartments: ArrayList<Apartment>) {
+        this.apartmentsFeedFragment?.showApartments(fetchedApartments)
+    }
+
+    fun onFragmentDestroyed() {
+        apartmentsFeedFragment = null
+    }
+
+    fun apartmentClicked(apartment: Apartment) {
+        mainActivity?.apartmentChosen(apartment)
+    }
+
+    fun apartmentFavouriteClicked(
+        apartment: Apartment,
+        toggleButton: CompoundButton,
+        favourite: Boolean
+    ) {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            toggleButton.isChecked = false
+            mainActivity?.promptUserSignIn()
+        } else {
+            if (favourite) {
+                FireDatabase.addFavouriteApartment(apartment)
+                mainActivity?.addCountToBadge()
+            } else {
+                FireDatabase.removeFavouriteApartment(apartment)
+                mainActivity?.decreaseCountToBadge()
+            }
+        }
+    }
+
+    fun userFetchFinishedSuccessfully(status: String, user: User) {
+        mainActivity?.signInFinishedSuccessfully(status, user)
+    }
+
+    fun userFetchFinishedFailed(status: String) {
+        mainActivity?.signInFinished(status)
+    }
+
+    fun onActivityDestroyed() {
+        mainActivity = null
+    }
+
+}
