@@ -6,6 +6,7 @@ import com.example.carservice.models.Apartment
 import com.example.carservice.models.User
 import com.example.carservice.presenters.MainActivityPresenter
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import java.lang.RuntimeException
@@ -23,6 +24,8 @@ object FireDatabase {
     private var currentUserRef: DocumentReference? = null
     private var currentUser: User? = null
 
+    private var apartments: ArrayList<Apartment>? = null
+
     fun addApartment(apartment: Apartment) {
         val randomUUID = UUID.randomUUID().toString()
         apartment.uuid = randomUUID
@@ -30,24 +33,38 @@ object FireDatabase {
     }
 
     fun fetchApartments() {
+        if (apartments == null) {
+            fetchApartmentsFromFirebase()
+        } else {
+            MainActivityPresenter.apartmentsFetched(apartments!!)
+        }
+    }
+
+    fun getFetchedApartments(): ArrayList<Apartment> {
+        return apartments!!
+    }
+
+    private fun fetchApartmentsFromFirebase() {
         apartmentsRef.get().addOnSuccessListener { result ->
             val fetchedApartments = ArrayList<Apartment>()
             for (document in result) {
-                val data = document.data
-                val apartment = getApartmentFromData(document.id, data)
+                val apartment = getApartmentFromData(document.id, document.data)
                 fetchedApartments.add(apartment)
             }
-            currentUser?.favourites?.let {favouritesMap ->
+//            DateValidatorPointBackward
+            currentUser?.favourites?.let { favouritesMap ->
                 fetchedApartments.forEach {
                     it.isFavouriteForCurrentUser = favouritesMap.containsKey(it.uuid)
                 }
             }
+            apartments = fetchedApartments
             MainActivityPresenter.apartmentsFetched(fetchedApartments)
         }
     }
 
     fun addFavouriteApartment(apartment: Apartment) {
-        currentUser!!.favourites ?: run{
+        apartment.isFavouriteForCurrentUser = true
+        currentUser!!.favourites ?: run {
             currentUser!!.favourites = HashMap()
         }
         currentUser!!.favourites!![apartment.uuid!!] = apartment
@@ -77,7 +94,8 @@ object FireDatabase {
                 currentUser = initUserFromData(document.data!!)
                 MainActivityPresenter.userFetchFinishedSuccessfully("successfully", currentUser!!)
             } else {
-                throw RuntimeException("should have had document and data in firebase")
+                FirebaseAuth.getInstance().signOut()
+                MainActivityPresenter.userFetchFinishedFailed("sign in failed")
             }
         }.addOnFailureListener { exception ->
             Log.d(TAG, "exception: ", exception)
@@ -101,13 +119,20 @@ object FireDatabase {
     }
 
     private fun initUserFromData(data: Map<String, Any>): User {
+        val favourites: HashMap<String, Apartment>? = HashMap()
+        val favouritesMap = data["favourites"] as HashMap<String, HashMap<String, String>>?
+        favouritesMap?.forEach {
+            val apartment = getApartmentFromData(it.key, it.value)
+            apartment.isFavouriteForCurrentUser = true
+            favourites!![it.key] = apartment
+        }
         return User(
             data["uid"] as String,
             data["name"] as String,
             data["phoneNumber"] as String?,
             data["email"] as String?,
             data["pid"] as String?,
-            data["favourites"] as HashMap<String, Apartment>?
+            favourites
         )
     }
 
@@ -121,7 +146,8 @@ object FireDatabase {
                 (data["location"] as Map<String, Double>).getOrElse("latitude") { 0.0 },
                 (data["location"] as Map<String, Double>).getOrElse("longitude") { 0.0 }
             ),
-            R.drawable.apart
+            data["imagePath"] as String?,
+            data["secondaryImagesPaths"] as ArrayList<String>
         )
     }
 

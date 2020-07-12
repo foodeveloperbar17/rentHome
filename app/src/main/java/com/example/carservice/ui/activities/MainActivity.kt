@@ -18,6 +18,7 @@ import com.example.carservice.presenters.MainActivityPresenter
 import com.example.carservice.ui.fragments.ApartmentsFeedFragment
 import com.example.carservice.ui.fragments.ProfileFragment
 import com.example.carservice.ui.fragments.apartmentFragments.ApartmentFragment
+import com.example.carservice.ui.fragments.FavouritesFragment
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -47,8 +48,10 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener {
             if (it.itemId == R.id.feed_menu_id) {
                 replaceFragment(ApartmentsFeedFragment())
+            } else if (it.itemId == R.id.favourite_menu_id) {
+                MainActivityPresenter.favouritesButtonClicked()
             } else if (it.itemId == R.id.profile_menu_id) {
-                replaceFragment(ProfileFragment.getInstance())
+                MainActivityPresenter.profileButtonClicked()
             }
             return@setOnNavigationItemSelectedListener true
         }
@@ -61,23 +64,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun showFavouritesFragment(favouriteApartments: ArrayList<Apartment>?) {
+        val favouritesFragment =
+            FavouritesFragment()
+        replaceFragment(favouritesFragment)
+        favouritesFragment.setApartments(favouriteApartments)
+    }
+
+    fun showProfileFragment(user: User) {
+        val profileFragment = ProfileFragment()
+        replaceFragment(profileFragment)
+        profileFragment.setUser(user)
+    }
+
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(
             R.id.fragment_container_id,
             fragment
-        ).commit()
+        ).addToBackStack(null).commit()
     }
 
     private fun addFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().add(
             R.id.fragment_container_id,
             fragment
-        ).commit()
+        ).addToBackStack(null).commit()
     }
 
     fun apartmentChosen(apartment: Apartment) {
-        addFragment(ApartmentFragment.getInstance())
-        ApartmentFragment.getInstance().setModel(apartment)
+        val apartmentFragment = ApartmentFragment(apartment)
+        replaceFragment(apartmentFragment)
     }
 
     fun promptUserSignIn() {
@@ -110,31 +126,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun signInFinishedSuccessfully(status: String, user: User){
+    fun signInFinishedSuccessfully(status: String, user: User) {
         updateUIForUser(user)
         signInFinished(status)
     }
 
-    private fun updateUIForUser(user: User){
+    private fun updateUIForUser(user: User) {
         val fragments = supportFragmentManager.fragments
-        if(fragments.size > 0){
+        if (fragments.size > 0) {
             val lastFragment = fragments[fragments.size - 1]
-            if(lastFragment is ApartmentsFeedFragment){
+            if (lastFragment is ApartmentsFeedFragment) {
                 lastFragment.updateUIForUser(user)
             }
         }
         val badge = bottomNavigationView.getOrCreateBadge(R.id.favourite_menu_id)
         badge.isVisible = true
-        user.favourites?.size.let { badge.number = it!! }
+        user.favourites?.let {
+            badge.number = it.size
+        }
     }
 
-    fun addCountToBadge(){
+    fun addCountToBadge() {
         val badge = bottomNavigationView.getOrCreateBadge(R.id.favourite_menu_id)
         badge.isVisible = true
         badge.number++
     }
 
-    fun decreaseCountToBadge(){
+    fun decreaseCountToBadge() {
         val badge = bottomNavigationView.getOrCreateBadge(R.id.favourite_menu_id)
         badge.isVisible = true
         badge.number--
@@ -146,7 +164,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun startLoading(){
+    fun startLoading() {
         loadingProgressBar.visibility = View.VISIBLE
 
         window.setFlags(
@@ -155,9 +173,18 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun stopLoading(){
+    private fun stopLoading() {
         loadingProgressBar.visibility = View.GONE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     @Override

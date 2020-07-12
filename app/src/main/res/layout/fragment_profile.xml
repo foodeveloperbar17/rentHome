@@ -1,14 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragments.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ImageView
+        android:id="@+id/profile_image_view"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_margin="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/profile_name_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="saxeli"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_image_view"
+        app:layout_constraintStart_toEndOf="@+id/profile_image_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/active_rent_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="active rent"
+        app:layout_constraintBottom_toTopOf="@+id/cards_button"
+        app:layout_constraintEnd_toEndOf="@+id/vertical_guide"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_image_view" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cards_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="payment / cards"
+        app:layout_constraintBottom_toTopOf="@+id/rent_history_button"
+        app:layout_constraintEnd_toEndOf="@+id/vertical_guide"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/active_rent_button" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/rent_history_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="rent history"
+        app:layout_constraintBottom_toTopOf="@+id/help_button"
+        app:layout_constraintEnd_toEndOf="@+id/vertical_guide"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cards_button" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/help_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Help"
+        app:layout_constraintBottom_toTopOf="@+id/terms_and_conditions_button"
+        app:layout_constraintEnd_toEndOf="@+id/vertical_guide"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rent_history_button" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/terms_and_conditions_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="terms and conditions"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/vertical_guide"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/help_button" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_guide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

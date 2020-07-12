@@ -1,6 +1,5 @@
 package com.example.carservice.ui.adapters
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +27,7 @@ class ApartmentSecondaryImagesAdapter :
 
     fun setData(images : ArrayList<Drawable>){
         this.images = images
+        notifyDataSetChanged()
     }
 
     class SecondaryImagesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

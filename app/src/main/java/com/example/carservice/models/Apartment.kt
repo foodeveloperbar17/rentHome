@@ -9,8 +9,9 @@ data class Apartment(
     val description: String?,
     val price: Double,
     val location: LatLng?,
-    val imagePath: Int? = 0,
-    val userRating: Int = 0,
+    var imagePath: String? = null,
+    val secondaryImagesPaths: ArrayList<String> = ArrayList<String>(),
+    val userRating: Double = 0.0,
     val overAllRating: Double = 0.0,
 
 // not for firebase storing.

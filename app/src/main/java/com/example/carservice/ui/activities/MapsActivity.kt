@@ -40,9 +40,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fromAutoCompleteFragment: AutocompleteSupportFragment
     private lateinit var toAutoCompleteFragment: AutocompleteSupportFragment
 
-
-    private val PERMISSION_REQUEST_CODE = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
@@ -65,7 +62,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
         val tbilisi = LatLng(41.73, 44.77)
         userMarker = mMap.addMarker(MarkerOptions().position(tbilisi).title("Marker in Tbilisi"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tbilisi, 10F))
@@ -193,9 +189,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun requestLocationPermissions() {
         val permissionsArray = arrayOf(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
         )
-        ActivityCompat.requestPermissions(this, permissionsArray, PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(this, permissionsArray, Companion.PERMISSION_REQUEST_CODE)
     }
 
     private fun detectStreet(latLng: LatLng) {
@@ -235,5 +231,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         MapsPresenter.getInstance(this).onActivityDestroy()
+    }
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 0
     }
 }

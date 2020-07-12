@@ -60,7 +60,6 @@ class ApartmentsFeedFragment : Fragment() {
                 it.isFavouriteForCurrentUser = favouritesSet.contains(it.uuid)
             }
             apartmentsAdapter.setData(apartments)
-            Log.e("luka", "check if data is changed ${apartmentsAdapter.getData()}")
         }
     }
 

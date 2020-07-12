@@ -1,5 +1,6 @@
 package com.example.carservice.presenters
 
+import com.example.carservice.R
 import com.example.carservice.ui.activities.MapsActivity
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
@@ -54,11 +55,7 @@ class MapsPresenter(mapsActivity: MapsActivity) {
 
     private fun initGeoApiContext() {
         geoContext = GeoApiContext()
-        geoContext.setApiKey("AIzaSyBRQllVOX1FsbVFyN3-NxtDDInkAFEpzLs")
-//        maybe free api key
-//        AIzaSyCCDwPSyEk233rmjs75IDaz8WPYUhXiu2Y
-//        second api key, this worked
-//        AIzaSyBRQllVOX1FsbVFyN3-NxtDDInkAFEpzLs
+        geoContext.setApiKey(mapsActivity?.resources?.getString(R.string.geo_api_key))
     }
 
 

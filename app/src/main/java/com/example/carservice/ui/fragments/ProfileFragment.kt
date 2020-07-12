@@ -7,29 +7,21 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.example.carservice.R
+import com.example.carservice.models.User
 import com.google.android.material.button.MaterialButton
 
 class ProfileFragment : Fragment() {
+    private lateinit var profileImage: ImageView
 
-    companion object{
-        private var instance : ProfileFragment? = null
+    private lateinit var activeRentButton: MaterialButton
+    private lateinit var cardsButton: MaterialButton
+    private lateinit var rentHistoryButton: MaterialButton
+    private lateinit var helpButton: MaterialButton
+    private lateinit var termsAndConditionsButton: MaterialButton
 
-        fun getInstance(): ProfileFragment {
-            if (instance == null){
-                instance =
-                    ProfileFragment()
-            }
-            return instance!!
-        }
-    }
+    private var uiCreated = false
 
-    private lateinit var profileImage : ImageView
-
-    private lateinit var activeRentButton : MaterialButton
-    private lateinit var cardsButton : MaterialButton
-    private lateinit var rentHistoryButton : MaterialButton
-    private lateinit var helpButton : MaterialButton
-    private lateinit var termsAndConditionsButton : MaterialButton
+    private var user: User? = null
 
 
     override fun onCreateView(
@@ -41,10 +33,13 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initUI(view)
+
+        uiCreated = true
+        drawUser()
 //        persenter on view created
     }
 
-    private fun initUI(view: View){
+    private fun initUI(view: View) {
         profileImage = view.findViewById(R.id.profile_image_view)
 
         activeRentButton = view.findViewById(R.id.active_rent_button)
@@ -52,5 +47,17 @@ class ProfileFragment : Fragment() {
         rentHistoryButton = view.findViewById(R.id.rent_history_button)
         helpButton = view.findViewById(R.id.help_button)
         termsAndConditionsButton = view.findViewById(R.id.terms_and_conditions_button)
+    }
+
+    fun setUser(user: User) {
+        this.user = user
+        drawUser()
+    }
+
+    private fun drawUser() {
+        if(uiCreated){
+
+        }
+//        to do
     }
 }

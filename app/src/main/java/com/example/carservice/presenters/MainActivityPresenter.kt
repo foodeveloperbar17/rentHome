@@ -8,6 +8,7 @@ import com.example.carservice.models.Apartment
 import com.example.carservice.models.User
 import com.example.carservice.ui.activities.MainActivity
 import com.example.carservice.ui.fragments.ApartmentsFeedFragment
+import com.example.carservice.ui.fragments.apartmentFragments.ApartmentInfoFragment
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -62,6 +63,31 @@ object MainActivityPresenter {
                 FireDatabase.removeFavouriteApartment(apartment)
                 mainActivity?.decreaseCountToBadge()
             }
+        }
+    }
+
+    fun favouritesButtonClicked() {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            mainActivity?.promptUserSignIn()
+        } else {
+            val favouritesCollection = FireDatabase.getCurrentUser()?.favourites?.values
+            mainActivity?.showFavouritesFragment(ArrayList(favouritesCollection))
+        }
+    }
+
+    fun profileButtonClicked() {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            mainActivity?.promptUserSignIn()
+        } else {
+            mainActivity?.showProfileFragment(FireDatabase.getCurrentUser()!!)
+        }
+    }
+
+    fun rentButtonClicked(apartmentInfoFragment: ApartmentInfoFragment) {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            mainActivity?.promptUserSignIn()
+        } else {
+            apartmentInfoFragment.chooseDate()
         }
     }
 

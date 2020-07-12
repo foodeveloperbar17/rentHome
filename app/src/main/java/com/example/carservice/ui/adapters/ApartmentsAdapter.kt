@@ -11,9 +11,12 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.carservice.R
+import com.example.carservice.glide.GlideApp
 import com.example.carservice.models.Apartment
 import com.example.carservice.presenters.MainActivityPresenter
+import com.google.firebase.storage.FirebaseStorage
 
 class ApartmentsAdapter : RecyclerView.Adapter<ApartmentsAdapter.ApartmentsHolder>() {
 
@@ -49,11 +52,16 @@ class ApartmentsAdapter : RecyclerView.Adapter<ApartmentsAdapter.ApartmentsHolde
             itemView.findViewById(R.id.apartment_description_textview_id)
         private var ratingBar: RatingBar = itemView.findViewById(R.id.apartment_rating_bar)
         private var rootView: View = itemView
-        private var favouriteToggleButton: ToggleButton = itemView.findViewById(R.id.favourite_toggle_button)
+        private var favouriteToggleButton: ToggleButton =
+            itemView.findViewById(R.id.favourite_toggle_button)
 
         fun setData(apartment: Apartment) {
-            apartment.description?.let { descriptionTextView.setText(apartment.description) }
-            apartment.imagePath?.let { image.setImageResource(apartment.imagePath) }
+            apartment.description?.let { descriptionTextView.text = apartment.description }
+            apartment.imagePath?.let {
+                GlideApp.with(rootView.context)
+                    .load(FirebaseStorage.getInstance().reference.child(it))
+                    .into(image)
+            }
             val layerDrawable = ratingBar.progressDrawable as LayerDrawable
             layerDrawable.getDrawable(2)
                 .setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP) // this must be inside
@@ -64,11 +72,12 @@ class ApartmentsAdapter : RecyclerView.Adapter<ApartmentsAdapter.ApartmentsHolde
                 MainActivityPresenter.apartmentClicked(apartment)
             }
 
-            favouriteToggleButton.setOnCheckedChangeListener { toggleButton, b ->
-                MainActivityPresenter.apartmentFavouriteClicked(apartment, toggleButton, b)
+            favouriteToggleButton.setOnClickListener {
+                val button = it as ToggleButton
+                MainActivityPresenter.apartmentFavouriteClicked(apartment, button, button.isChecked)
             }
 
-            if(apartment.isFavouriteForCurrentUser){
+            if (apartment.isFavouriteForCurrentUser) {
                 favouriteToggleButton.isChecked = true
             }
 
