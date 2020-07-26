@@ -5,6 +5,7 @@ import android.widget.ToggleButton
 import com.example.carservice.R
 import com.example.carservice.db.FireDatabase
 import com.example.carservice.models.Apartment
+import com.example.carservice.models.Rent
 import com.example.carservice.models.User
 import com.example.carservice.ui.activities.MainActivity
 import com.example.carservice.ui.fragments.ApartmentsFeedFragment
@@ -13,6 +14,8 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.*
+import kotlin.collections.ArrayList
 
 object MainActivityPresenter {
     private var mainActivity: MainActivity? = null
@@ -89,6 +92,25 @@ object MainActivityPresenter {
         } else {
             apartmentInfoFragment.chooseDate()
         }
+    }
+
+    fun dateChosen(date: Long, apartment: Apartment, user: User) {
+        val rentDays = ArrayList<Long>()
+        rentDays.add(date)
+        val rent = Rent(
+            UUID.randomUUID().toString(),
+            user,
+            apartment,
+            rentDays,
+            rentDays.size * apartment.price
+        )
+        apartment.rentHistory.addAll(rentDays)
+        user.rentHistory.addAll(rentDays)
+        FireDatabase.saveRent(rent, apartment, user)
+    }
+
+    fun successfullyRented() {
+        mainActivity?.makeToast("successfully rented")
     }
 
     fun userFetchFinishedSuccessfully(status: String, user: User) {

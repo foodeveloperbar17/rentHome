@@ -3,25 +3,38 @@ package com.example.carservice.ui.adapters
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.carservice.db.FireDatabase
-import com.example.carservice.presenters.MainActivityPresenter
+import com.example.carservice.models.Apartment
 import com.example.carservice.ui.fragments.apartmentFragments.ApartmentFragment
 import com.example.carservice.ui.fragments.apartmentFragments.ApartmentInfoFragment
 import com.example.carservice.ui.fragments.apartmentFragments.SmallMapFragment
 
-class ApartmentFragmentStateAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+class ApartmentFragmentStateAdapter(fragment: Fragment, apartment: Apartment) :
+    FragmentStateAdapter(fragment) {
+
+    private var apartment: Apartment = apartment
+
     override fun getItemCount(): Int {
         return ApartmentFragment.NUM_TABS
     }
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> ApartmentInfoFragment()
+            0 -> {
+                val apartmentInfoFragment = ApartmentInfoFragment()
+                apartmentInfoFragment.setApartment(apartment)
+                apartmentInfoFragment
+            }
             1 -> {
                 val smallMapFragment = SmallMapFragment()
                 smallMapFragment.setApartments(FireDatabase.getFetchedApartments())
+                smallMapFragment.setMainApartment(apartment)
                 smallMapFragment
             }
-            else -> ApartmentInfoFragment()
+            else -> {
+                val apartmentInfoFragment = ApartmentInfoFragment()
+                apartmentInfoFragment.setApartment(apartment)
+                apartmentInfoFragment
+            }
         }
     }
 

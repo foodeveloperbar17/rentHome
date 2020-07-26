@@ -1,10 +1,11 @@
 package com.example.carservice.models
 
-data class User (
+data class User(
     val uid: String,
     val name: String,
     var phoneNumber: String?,
     var email: String?,
     var pid: String?,
-    var favourites: HashMap<String, Apartment>?
+    var favourites: HashMap<String, Apartment>?,
+    val rentHistory: ArrayList<Long> = ArrayList()
 )

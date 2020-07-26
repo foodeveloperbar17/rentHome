@@ -3,6 +3,7 @@ package com.example.carservice.db
 import android.util.Log
 import com.example.carservice.R
 import com.example.carservice.models.Apartment
+import com.example.carservice.models.Rent
 import com.example.carservice.models.User
 import com.example.carservice.presenters.MainActivityPresenter
 import com.google.android.gms.maps.model.LatLng
@@ -20,6 +21,7 @@ object FireDatabase {
 
     private val apartmentsRef = FirebaseFirestore.getInstance().collection("/apartments")
     private val usersRef = FirebaseFirestore.getInstance().collection("/users")
+    private val rentsRef = FirebaseFirestore.getInstance().collection("/rents")
 
     private var currentUserRef: DocumentReference? = null
     private var currentUser: User? = null
@@ -72,6 +74,7 @@ object FireDatabase {
     }
 
     fun removeFavouriteApartment(apartment: Apartment) {
+        apartment.isFavouriteForCurrentUser = false
         currentUser!!.favourites!!.remove(apartment.uuid)
         currentUserRef!!.set(currentUser!!)
     }
@@ -132,7 +135,10 @@ object FireDatabase {
             data["phoneNumber"] as String?,
             data["email"] as String?,
             data["pid"] as String?,
-            favourites
+            favourites,
+            data["rentHistory"]?.let {
+                it as ArrayList<Long>
+            } ?: kotlin.run { ArrayList<Long>() }
         )
     }
 
@@ -147,8 +153,26 @@ object FireDatabase {
                 (data["location"] as Map<String, Double>).getOrElse("longitude") { 0.0 }
             ),
             data["imagePath"] as String?,
-            data["secondaryImagesPaths"] as ArrayList<String>
+            data["secondaryImagesPaths"] as ArrayList<String>,
+            data.getOrElse("userRating"){0.0} as Double,
+            data.getOrElse("overallRating"){0.0} as Double,
+            data["rentHistory"]?.let {
+                it as ArrayList<Long>
+            } ?: kotlin.run { ArrayList<Long>() }
         )
+    }
+
+    fun saveRent(rent: Rent, apartment: Apartment, user: User) {
+        val rentRef = rentsRef.document(rent.uid)
+        val apartmentRef = apartmentsRef.document(apartment.uuid!!)
+        val userRef = usersRef.document(user.uid)
+        FirebaseFirestore.getInstance().runBatch {
+            it.set(rentRef, rent)
+            it.set(apartmentRef, apartment)
+            it.set(userRef, user)
+        }.addOnCompleteListener {
+            MainActivityPresenter.successfullyRented()
+        }
     }
 
     fun getCurrentUser(): User? {
@@ -160,6 +184,4 @@ object FireDatabase {
         currentUser = null
         currentUserRef = null
     }
-
-
 }

@@ -12,11 +12,10 @@ import android.widget.TextView
 import android.widget.Toast
 
 import com.example.carservice.R
+import com.example.carservice.db.FireDatabase
+import com.example.carservice.models.Apartment
 import com.example.carservice.presenters.MainActivityPresenter
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointBackward
-import com.google.android.material.datepicker.DateValidatorPointForward
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.datepicker.*
 
 class ApartmentInfoFragment : Fragment() {
 
@@ -25,6 +24,7 @@ class ApartmentInfoFragment : Fragment() {
     private lateinit var userRatingsTextView: TextView
 
     private lateinit var rentButton: Button
+    private lateinit var apartment: Apartment
 
 
     override fun onCreateView(
@@ -37,6 +37,11 @@ class ApartmentInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initUI(view)
         initUIActions()
+        displayApartment()
+    }
+
+    fun setApartment(apartment: Apartment) {
+        this.apartment = apartment
     }
 
     private fun initUI(view: View) {
@@ -53,29 +58,36 @@ class ApartmentInfoFragment : Fragment() {
         }
     }
 
+    private fun displayApartment() {
+        apartment.let {
+            priceTextView.text = "Price : ${it.price}"
+            descriptionTextView.text = "Description : ${it.description}"
+            userRatingsTextView.text = "Rating : ${it.userRating}"
+        }
+    }
+
     fun chooseDate() {
         val startDate = System.currentTimeMillis() - 1000 * 60 * 60 * 24
         val endDate = startDate + 1000 * 60 * 60 * 24 * 13
-        val datePickerBuilder = MaterialDatePicker.Builder.dateRangePicker()
+        val datePickerBuilder = MaterialDatePicker.Builder.datePicker()
         datePickerBuilder.setCalendarConstraints(
             CalendarConstraints.Builder().setStart(startDate)
                 .setEnd(endDate)
                 .setValidator(object : CalendarConstraints.DateValidator {
                     override fun isValid(date: Long): Boolean {
-                        return date in startDate until endDate
+                        return date in startDate until endDate && !apartment.rentHistory.contains(date)
                     }
+
                     override fun writeToParcel(p0: Parcel?, p1: Int) {}
 
-                    override fun describeContents(): Int { return 0 }
+                    override fun describeContents(): Int {
+                        return 0
+                    }
                 }).build()
         )
         val datePicker = datePickerBuilder.build()
         datePicker.addOnPositiveButtonClickListener {
-            Toast.makeText(
-                this.context,
-                "first is ${it.first} second is ${it.second}",
-                Toast.LENGTH_LONG
-            ).show()
+            MainActivityPresenter.dateChosen(it, apartment, FireDatabase.getCurrentUser()!!)
         }
         fragmentManager?.let { fragmentManager ->
             datePicker.show(fragmentManager, "date picker")

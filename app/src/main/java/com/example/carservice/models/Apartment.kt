@@ -10,9 +10,10 @@ data class Apartment(
     val price: Double,
     val location: LatLng?,
     var imagePath: String? = null,
-    val secondaryImagesPaths: ArrayList<String> = ArrayList<String>(),
+    val secondaryImagesPaths: ArrayList<String> = ArrayList(),
     val userRating: Double = 0.0,
     val overAllRating: Double = 0.0,
+    val rentHistory: ArrayList<Long> = ArrayList(),
 
 // not for firebase storing.
     var isFavouriteForCurrentUser: Boolean = false

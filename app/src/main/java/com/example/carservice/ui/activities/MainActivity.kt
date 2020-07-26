@@ -156,6 +156,8 @@ class MainActivity : AppCompatActivity() {
     fun apartmentChosen(apartment: Apartment) {
         val apartmentFragment = ApartmentFragment()
         apartmentFragment.setApartment(apartment)
+        showBackArrow(true)
+        setToolbarTitle(apartment.name ?: "Apartment")
         replaceFragment(apartmentFragment)
     }
 
@@ -238,6 +240,29 @@ class MainActivity : AppCompatActivity() {
     private fun stopLoading() {
         loadingProgressBar.visibility = View.GONE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    fun makeToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun showBackArrow(show: Boolean) {
+        if (show) {
+            mainDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            actionBarDrawerToggle.isDrawerIndicatorEnabled = false
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            actionBarDrawerToggle.setToolbarNavigationClickListener {
+                onBackPressed()
+            }
+        } else {
+            mainDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            actionBarDrawerToggle.isDrawerIndicatorEnabled = true
+        }
+    }
+
+    private fun setToolbarTitle(title: String){
+        supportActionBar?.title = title
     }
 
 

@@ -23,14 +23,12 @@ import com.google.firebase.storage.StorageReference
 class ApartmentFragment : Fragment() {
 
     companion object {
-
         private val tabNames = arrayOf(
             R.string.main_tab_name,
             R.string.map_tab_name,
             R.string.details_tab_name,
             R.string.reviews_tab_name
         )
-
         const val NUM_TABS = 4
     }
 
@@ -41,8 +39,7 @@ class ApartmentFragment : Fragment() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
 
-    private var apartment: Apartment? = null
-    private var viewCreated = false
+    private lateinit var apartment: Apartment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,15 +50,11 @@ class ApartmentFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initUI(view)
-        viewCreated = true
-        apartment?.let { displayModel(it) }
+        displayModel()
     }
 
     fun setApartment(apartment: Apartment) {
         this.apartment = apartment
-        if (viewCreated) {
-            displayModel(apartment)
-        }
     }
 
     private fun initUI(view: View) {
@@ -72,7 +65,7 @@ class ApartmentFragment : Fragment() {
         tabLayout = view.findViewById(R.id.apartment_tab_layout)
         viewPager = view.findViewById(R.id.apartment_view_pager)
 
-        viewPager.adapter = ApartmentFragmentStateAdapter(this)
+        viewPager.adapter = ApartmentFragmentStateAdapter(this, apartment)
         viewPager.isUserInputEnabled = false
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -88,7 +81,7 @@ class ApartmentFragment : Fragment() {
             LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private fun displayModel(apartment: Apartment) {
+    private fun displayModel() {
         apartment.imagePath?.let {
             GlideApp.with(this).load(createStorageReferenceFromString(it))
                 .into(mainImage)

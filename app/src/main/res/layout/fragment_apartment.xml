@@ -10,7 +10,6 @@
         android:id="@+id/apartment_main_image_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:src="@drawable/apart"
         app:layout_constraintHeight_percent="0.3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
