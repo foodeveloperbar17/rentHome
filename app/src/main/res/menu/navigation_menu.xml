@@ -1,4 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/language_menu_item"
+        android:title="language">
+        <menu>
+            <item
+                android:id="@+id/georgian_language_item"
+                android:title="GE" />
+
+            <item
+                android:id="@+id/english_language_item"
+                android:title="EN" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/contacts_menu_item_id"
+        android:title="contacts" />
+    <item
+        android:id="@+id/terms_and_conditions_menu_item_id"
+        android:title="terms and conditions" />
+    <item
+        android:id="@+id/parameters_menu_item_id"
+        android:title="parameters" />
+
+    <item
+        android:id="@+id/log_in_menu_item_id"
+        android:title="log in"
+        android:visible="true" />
+
+    <item
+        android:id="@+id/log_out_menu_item_id"
+        android:title="log out"
+        android:visible="true" />
 </menu>

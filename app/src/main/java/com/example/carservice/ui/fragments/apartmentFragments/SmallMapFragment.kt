@@ -18,11 +18,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
-class SmallMapFragment(private var apartments: ArrayList<Apartment>) : Fragment(),
+class SmallMapFragment : Fragment(),
     GoogleMap.OnMarkerClickListener {
+    private var apartments: ArrayList<Apartment>? = null
 
     private lateinit var googleMap: GoogleMap
     private val markerApartmentMap = HashMap<Marker, Apartment>()
+    private var mapCreated = false
 
     private val callback = OnMapReadyCallback { googleMap ->
         /**
@@ -34,10 +36,11 @@ class SmallMapFragment(private var apartments: ArrayList<Apartment>) : Fragment(
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+        mapCreated = true
         val tbilisi = LatLng(41.73, 44.77)
         this.googleMap = googleMap
 //        googleMap.addMarker(MarkerOptions().position(tbilisi).title("Marker in Tbilisi"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(tbilisi))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tbilisi, 10F))
 
         googleMap.setOnMarkerClickListener(this)
 
@@ -58,8 +61,15 @@ class SmallMapFragment(private var apartments: ArrayList<Apartment>) : Fragment(
         mapFragment?.getMapAsync(callback)
     }
 
+    fun setApartments(apartments: ArrayList<Apartment>){
+        this.apartments = apartments
+        if(mapCreated){
+            addApartmentsAsMarkers()
+        }
+    }
+
     private fun addApartmentsAsMarkers() {
-        apartments.forEach { apartment ->
+        apartments?.forEach { apartment ->
             apartment.location?.let {
                 val marker = googleMap.addMarker(MarkerOptions().position(it).title(apartment.name))
                 markerApartmentMap.put(marker, apartment)

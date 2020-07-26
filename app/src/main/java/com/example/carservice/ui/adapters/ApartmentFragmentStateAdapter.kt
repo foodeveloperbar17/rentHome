@@ -16,7 +16,11 @@ class ApartmentFragmentStateAdapter(fragment: Fragment) : FragmentStateAdapter(f
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> ApartmentInfoFragment()
-            1 -> SmallMapFragment(FireDatabase.getFetchedApartments())
+            1 -> {
+                val smallMapFragment = SmallMapFragment()
+                smallMapFragment.setApartments(FireDatabase.getFetchedApartments())
+                smallMapFragment
+            }
             else -> ApartmentInfoFragment()
         }
     }

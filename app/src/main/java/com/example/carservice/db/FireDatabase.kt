@@ -51,7 +51,7 @@ object FireDatabase {
                 val apartment = getApartmentFromData(document.id, document.data)
                 fetchedApartments.add(apartment)
             }
-//            DateValidatorPointBackward
+
             currentUser?.favourites?.let { favouritesMap ->
                 fetchedApartments.forEach {
                     it.isFavouriteForCurrentUser = favouritesMap.containsKey(it.uuid)
@@ -153,6 +153,12 @@ object FireDatabase {
 
     fun getCurrentUser(): User? {
         return currentUser
+    }
+
+    fun signOut() {
+        FirebaseAuth.getInstance().signOut()
+        currentUser = null
+        currentUserRef = null
     }
 
 

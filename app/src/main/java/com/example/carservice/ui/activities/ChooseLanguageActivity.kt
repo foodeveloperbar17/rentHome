@@ -6,18 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import com.example.carservice.R
+import com.example.carservice.utils.LanguageUtils
 import java.util.*
 
 class ChooseLanguageActivity : AppCompatActivity() {
-
-    companion object {
-        const val LANGUAGE_PREFERENCES_KEY = "language"
-        const val LANGUAGE_KEY = "lang"
-
-        const val GEORGIAN_LANGUAGE_CODE = "ka_"
-        const val ENGLISH_LANGUAGE_CODE = "en_US"
-
-    }
 
     private lateinit var georgiaImageView: ImageView
     private lateinit var englishImageView: ImageView
@@ -26,8 +18,8 @@ class ChooseLanguageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_language)
 
-        val sharedPreferences = getSharedPreferences(LANGUAGE_PREFERENCES_KEY, Context.MODE_PRIVATE)
-        if (sharedPreferences.contains(LANGUAGE_KEY)) {
+        val sharedPreferences = getSharedPreferences(LanguageUtils.LANGUAGE_PREFERENCES_KEY, Context.MODE_PRIVATE)
+        if (sharedPreferences.contains(LanguageUtils.LANGUAGE_KEY)) {
             startMainActivity()
             return
         }
@@ -42,28 +34,16 @@ class ChooseLanguageActivity : AppCompatActivity() {
 
     private fun initUIActions() {
         georgiaImageView.setOnClickListener {
-            setLanguage(GEORGIAN_LANGUAGE_CODE)
+            setLanguage(LanguageUtils.GEORGIAN_LANGUAGE_CODE)
         }
 
         englishImageView.setOnClickListener {
-            setLanguage(ENGLISH_LANGUAGE_CODE)
+            setLanguage(LanguageUtils.ENGLISH_LANGUAGE_CODE)
         }
     }
 
     private fun setLanguage(lang: String) {
-        val sharedPreferences = getSharedPreferences(LANGUAGE_PREFERENCES_KEY, Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString(LANGUAGE_KEY, lang)
-        editor.apply()
-
-        val myLocale = Locale(lang)
-
-        val dm = resources.displayMetrics
-
-        val conf = resources.configuration
-
-        conf.setLocale(myLocale)
-        resources.updateConfiguration(conf, dm)
+        LanguageUtils.setLanguage(lang, this)
 
         startMainActivity()
     }

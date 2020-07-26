@@ -14,19 +14,24 @@ import com.example.carservice.R
 import com.example.carservice.glide.GlideApp
 import com.example.carservice.models.Apartment
 import com.example.carservice.ui.adapters.ApartmentFragmentStateAdapter
-import com.example.carservice.ui.adapters.ApartmentSecondaryImagesAdapter
 import com.example.carservice.ui.adapters.GliderSecondaryImagesAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
-class ApartmentFragment(private var apartment: Apartment) : Fragment() {
+class ApartmentFragment : Fragment() {
 
     companion object {
-        const val NUM_TABS = 5
 
-        private val tabNames = arrayOf(1, 2, 3, 4, 5)
+        private val tabNames = arrayOf(
+            R.string.main_tab_name,
+            R.string.map_tab_name,
+            R.string.details_tab_name,
+            R.string.reviews_tab_name
+        )
+
+        const val NUM_TABS = 4
     }
 
     private lateinit var mainImage: ImageView
@@ -35,6 +40,9 @@ class ApartmentFragment(private var apartment: Apartment) : Fragment() {
 
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
+
+    private var apartment: Apartment? = null
+    private var viewCreated = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +53,15 @@ class ApartmentFragment(private var apartment: Apartment) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initUI(view)
-        displayModel(apartment)
+        viewCreated = true
+        apartment?.let { displayModel(it) }
+    }
+
+    fun setApartment(apartment: Apartment) {
+        this.apartment = apartment
+        if (viewCreated) {
+            displayModel(apartment)
+        }
     }
 
     private fun initUI(view: View) {
@@ -57,9 +73,10 @@ class ApartmentFragment(private var apartment: Apartment) : Fragment() {
         viewPager = view.findViewById(R.id.apartment_view_pager)
 
         viewPager.adapter = ApartmentFragmentStateAdapter(this)
+        viewPager.isUserInputEnabled = false
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = "Tab ${tabNames[position]}"
+            tab.text = resources.getString(tabNames[position])
         }.attach()
     }
 
@@ -85,5 +102,4 @@ class ApartmentFragment(private var apartment: Apartment) : Fragment() {
     private fun createStorageReferenceFromString(path: String): StorageReference {
         return FirebaseStorage.getInstance().reference.child(path)
     }
-//    C:\Users\lukaa\OneDrive\Desktop\CarService\app\src\main\java\values
 }

@@ -8,7 +8,9 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.example.carservice.R
 import com.example.carservice.db.FireDatabase
@@ -16,16 +18,23 @@ import com.example.carservice.models.Apartment
 import com.example.carservice.models.User
 import com.example.carservice.presenters.MainActivityPresenter
 import com.example.carservice.ui.fragments.ApartmentsFeedFragment
+import com.example.carservice.ui.fragments.FavouritesFragment
 import com.example.carservice.ui.fragments.ProfileFragment
 import com.example.carservice.ui.fragments.apartmentFragments.ApartmentFragment
-import com.example.carservice.ui.fragments.FavouritesFragment
+import com.example.carservice.utils.LanguageUtils
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var loadingProgressBar: ProgressBar
+
+    private lateinit var mainDrawerLayout: DrawerLayout
+    private lateinit var toolbar: androidx.appcompat.widget.Toolbar
+    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+    private lateinit var leftNavigationView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,21 +49,74 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
-        bottomNavigationView = findViewById(R.id.bottom_navigation_view_id)
+        toolbar = findViewById(R.id.main_toolbar)
+        setSupportActionBar(toolbar)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        mainDrawerLayout = findViewById(R.id.main_drawer_layout)
+        actionBarDrawerToggle = ActionBarDrawerToggle(
+            this,
+            mainDrawerLayout,
+            toolbar,
+            R.string.nav_opened_description,
+            R.string.nav_closed_description
+        )
+
+        mainDrawerLayout.addDrawerListener(actionBarDrawerToggle)
+        actionBarDrawerToggle.syncState()
+
+        leftNavigationView = findViewById(R.id.nav_view)
+
         loadingProgressBar = findViewById(R.id.loading_progress_bar)
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view_id)
+
     }
 
     private fun initUIActions() {
         bottomNavigationView.setOnNavigationItemSelectedListener {
-            if (it.itemId == R.id.feed_menu_id) {
-                replaceFragment(ApartmentsFeedFragment())
-            } else if (it.itemId == R.id.favourite_menu_id) {
-                MainActivityPresenter.favouritesButtonClicked()
-            } else if (it.itemId == R.id.profile_menu_id) {
-                MainActivityPresenter.profileButtonClicked()
+            when (it.itemId) {
+                R.id.feed_menu_id -> {
+                    replaceFragment(ApartmentsFeedFragment())
+                }
+                R.id.favourite_menu_id -> {
+                    MainActivityPresenter.favouritesButtonClicked()
+                }
+                R.id.profile_menu_id -> {
+                    MainActivityPresenter.profileButtonClicked()
+                }
             }
             return@setOnNavigationItemSelectedListener true
         }
+
+        leftNavigationView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.georgian_language_item -> {
+                    LanguageUtils.setLanguage(LanguageUtils.GEORGIAN_LANGUAGE_CODE, this)
+                }
+                R.id.english_language_item -> {
+                    LanguageUtils.setLanguage(LanguageUtils.ENGLISH_LANGUAGE_CODE, this)
+                }
+                R.id.contacts_menu_item_id -> {
+
+                }
+                R.id.terms_and_conditions_menu_item_id -> {
+
+                }
+                R.id.parameters_menu_item_id -> {
+
+                }
+                R.id.log_in_menu_item_id -> {
+                    promptUserSignIn()
+                }
+                R.id.log_out_menu_item_id -> {
+                    FireDatabase.signOut()
+                }
+            }
+            return@setNavigationItemSelectedListener true
+        }
+
     }
 
     private fun displayDefaultFragment() {
@@ -92,7 +154,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun apartmentChosen(apartment: Apartment) {
-        val apartmentFragment = ApartmentFragment(apartment)
+        val apartmentFragment = ApartmentFragment()
+        apartmentFragment.setApartment(apartment)
         replaceFragment(apartmentFragment)
     }
 
@@ -116,12 +179,11 @@ class MainActivity : AppCompatActivity() {
 
                 val firebaseUser = FirebaseAuth.getInstance().currentUser!!
                 val newUser = User(firebaseUser.uid,
-                    firebaseUser.displayName.let { firebaseUser.displayName }.run { "carieli" },
+                    firebaseUser.displayName.let { firebaseUser.displayName } ?: run { "carieli" },
                     firebaseUser.phoneNumber,
                     firebaseUser.email, null, null
                 )
                 FireDatabase.createOrFetchUser(newUser)
-                Log.d("luka", "useria $newUser")
             }
         }
     }
