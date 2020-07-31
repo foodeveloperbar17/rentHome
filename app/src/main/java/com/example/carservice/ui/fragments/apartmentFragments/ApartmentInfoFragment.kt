@@ -75,9 +75,10 @@ class ApartmentInfoFragment : Fragment() {
                 .setEnd(endDate)
                 .setValidator(object : CalendarConstraints.DateValidator {
                     override fun isValid(date: Long): Boolean {
-                        return date in startDate until endDate && !apartment.rentHistory.contains(date)
+                        return date in startDate until endDate && !apartment.rentHistory.contains(
+                            date
+                        )
                     }
-
                     override fun writeToParcel(p0: Parcel?, p1: Int) {}
 
                     override fun describeContents(): Int {

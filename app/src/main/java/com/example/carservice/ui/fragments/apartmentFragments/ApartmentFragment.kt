@@ -75,18 +75,18 @@ class ApartmentFragment : Fragment() {
 
     private fun initRecyclerView(view: View) {
         otherImagesRecyclerView = view.findViewById(R.id.other_images_recycler_view)
-        otherImagesAdapter = GliderSecondaryImagesAdapter()
+        otherImagesAdapter = GliderSecondaryImagesAdapter(this)
         otherImagesRecyclerView.adapter = otherImagesAdapter
         otherImagesRecyclerView.layoutManager =
             LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun displayModel() {
-        apartment.imagePath?.let {
+        apartment.imagesPaths.first().let {
             GlideApp.with(this).load(createStorageReferenceFromString(it))
                 .into(mainImage)
         }
-        val storageReferenceArray = ArrayList(apartment.secondaryImagesPaths.map {
+        val storageReferenceArray = ArrayList(apartment.imagesPaths.map {
             createStorageReferenceFromString(it)
         })
         otherImagesAdapter.setData(storageReferenceArray)
@@ -94,5 +94,9 @@ class ApartmentFragment : Fragment() {
 
     private fun createStorageReferenceFromString(path: String): StorageReference {
         return FirebaseStorage.getInstance().reference.child(path)
+    }
+
+    fun changeMainImage(storageReference: StorageReference) {
+        GlideApp.with(this).load(storageReference).into(mainImage)
     }
 }

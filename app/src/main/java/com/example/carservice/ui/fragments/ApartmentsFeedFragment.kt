@@ -16,9 +16,6 @@ import com.example.carservice.models.User
 import com.example.carservice.presenters.MainActivityPresenter
 import com.example.carservice.ui.adapters.ApartmentsAdapter
 
-/**
- * A simple [Fragment] subclass.
- */
 class ApartmentsFeedFragment : Fragment() {
     private lateinit var apartmentsRecyclerView: RecyclerView
     private lateinit var apartmentsAdapter: ApartmentsAdapter

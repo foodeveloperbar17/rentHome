@@ -152,10 +152,9 @@ object FireDatabase {
                 (data["location"] as Map<String, Double>).getOrElse("latitude") { 0.0 },
                 (data["location"] as Map<String, Double>).getOrElse("longitude") { 0.0 }
             ),
-            data["imagePath"] as String?,
-            data["secondaryImagesPaths"] as ArrayList<String>,
-            data.getOrElse("userRating"){0.0} as Double,
-            data.getOrElse("overallRating"){0.0} as Double,
+            data["imagesPaths"] as ArrayList<String>,
+            data.getOrElse("userRating") { 0.0 } as Double,
+            data.getOrElse("overallRating") { 0.0 } as Double,
             data["rentHistory"]?.let {
                 it as ArrayList<Long>
             } ?: kotlin.run { ArrayList<Long>() }

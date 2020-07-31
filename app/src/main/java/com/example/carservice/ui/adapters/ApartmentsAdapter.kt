@@ -57,10 +57,12 @@ class ApartmentsAdapter : RecyclerView.Adapter<ApartmentsAdapter.ApartmentsHolde
 
         fun setData(apartment: Apartment) {
             apartment.description?.let { descriptionTextView.text = apartment.description }
-            apartment.imagePath?.let {
-                GlideApp.with(rootView.context)
-                    .load(FirebaseStorage.getInstance().reference.child(it))
-                    .into(image)
+            if (apartment.imagesPaths.size > 0) {
+                apartment.imagesPaths.first().let {
+                    GlideApp.with(rootView.context)
+                        .load(FirebaseStorage.getInstance().reference.child(it))
+                        .into(image)
+                }
             }
             val layerDrawable = ratingBar.progressDrawable as LayerDrawable
             layerDrawable.getDrawable(2)

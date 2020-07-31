@@ -3,13 +3,21 @@ package com.example.carservice.ui.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Layout
+import android.text.SpannableString
+import android.text.style.AlignmentSpan
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
+import androidx.core.view.get
+import androidx.core.view.iterator
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.example.carservice.R
@@ -68,10 +76,31 @@ class MainActivity : AppCompatActivity() {
         actionBarDrawerToggle.syncState()
 
         leftNavigationView = findViewById(R.id.nav_view)
+        centerMenuItems()
 
         loadingProgressBar = findViewById(R.id.loading_progress_bar)
         bottomNavigationView = findViewById(R.id.bottom_navigation_view_id)
+    }
 
+    private fun centerMenuItems() {
+        leftNavigationView.menu.iterator().forEach {
+            centerMenuItem(it)
+        }
+//        this is a xack
+        leftNavigationView.menu.getItem(0).subMenu.children.forEach {
+            centerMenuItem(it)
+        }
+    }
+
+    private fun centerMenuItem(menuItem: MenuItem) {
+        val spannableString = SpannableString(menuItem.title)
+        spannableString.setSpan(
+            AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+            0,
+            menuItem.title.length,
+            0
+        )
+        menuItem.title = spannableString
     }
 
     private fun initUIActions() {
@@ -116,13 +145,12 @@ class MainActivity : AppCompatActivity() {
             }
             return@setNavigationItemSelectedListener true
         }
-
     }
 
     private fun displayDefaultFragment() {
         val fragments = supportFragmentManager.fragments
         if (fragments.size == 0) {
-            addFragment(ApartmentsFeedFragment())
+            replaceFragment(ApartmentsFeedFragment())
         }
     }
 
@@ -146,11 +174,11 @@ class MainActivity : AppCompatActivity() {
         ).addToBackStack(null).commit()
     }
 
-    private fun addFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().add(
+    private fun replaceFragmentWithoutBackStack(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(
             R.id.fragment_container_id,
             fragment
-        ).addToBackStack(null).commit()
+        ).commit()
     }
 
     fun apartmentChosen(apartment: Apartment) {
@@ -158,7 +186,15 @@ class MainActivity : AppCompatActivity() {
         apartmentFragment.setApartment(apartment)
         showBackArrow(true)
         setToolbarTitle(apartment.name ?: "Apartment")
-        replaceFragment(apartmentFragment)
+
+        val fragments = supportFragmentManager.fragments
+        if (fragments.size > 0) {
+            if (fragments.last() is ApartmentFragment) {
+                replaceFragmentWithoutBackStack(apartmentFragment)
+            } else {
+                replaceFragment(apartmentFragment)
+            }
+        }
     }
 
     fun promptUserSignIn() {
@@ -261,13 +297,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setToolbarTitle(title: String){
+    private fun setToolbarTitle(title: String) {
         supportActionBar?.title = title
     }
 
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
+        if (supportFragmentManager.backStackEntryCount > 1) {
             supportFragmentManager.popBackStack()
         } else {
             super.onBackPressed()

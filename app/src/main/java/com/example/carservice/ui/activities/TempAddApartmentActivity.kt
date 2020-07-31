@@ -46,8 +46,7 @@ class TempAddApartmentActivity : AppCompatActivity() {
 
     private lateinit var countDownLatch: CountDownLatch
 
-    private var mainImagePath: Uri? = null
-    private var secondaryImagesPaths = ArrayList<Uri>()
+    private var imagesPaths = ArrayList<Uri>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,14 +88,7 @@ class TempAddApartmentActivity : AppCompatActivity() {
             val lng = lngTextView.text.toString().toDouble()
             val apartment = Apartment(null, name, description, price, LatLng(lat, lng))
             Thread {
-                mainImagePath?.let {
-                    FireStorage.uploadMainImageByUri(
-                        it,
-                        countDownLatch,
-                        apartment
-                    )
-                }
-                secondaryImagesPaths.forEach {
+                imagesPaths.forEach {
                     FireStorage.uploadImageByUri(it, countDownLatch, apartment)
                 }
             }.start()
@@ -120,9 +112,7 @@ class TempAddApartmentActivity : AppCompatActivity() {
     }
 
     private fun initializeForWorker() {
-        var numImages = secondaryImagesPaths.size
-        mainImagePath?.let { numImages++ }
-        countDownLatch = CountDownLatch(numImages)
+        countDownLatch = CountDownLatch(imagesPaths.size)
     }
 
     private fun openFileChooser() {
@@ -139,23 +129,21 @@ class TempAddApartmentActivity : AppCompatActivity() {
         if (requestCode == RC_ADD_IMAGE) {
             if (resultCode == Activity.RESULT_OK) {
                 data?.let {
-                    mainImagePath = null
-                    secondaryImagesPaths.clear()
+                    imagesPaths.clear()
 
                     if (it.data != null) {
-//                        i got array of images
-                        mainImagePath = it.data
-                        showImageOnMainImage()
+//                        I got one image
+                        showImageOnMainImage(it.data)
+                        imagesPaths.add(it.data!!)
                     } else {
                         it.clipData?.let { clipData ->
                             val count = clipData.itemCount
                             if (count > 0) {
-                                mainImagePath = clipData.getItemAt(0).uri
-                                showImageOnMainImage()
+                                showImageOnMainImage(clipData.getItemAt(0).uri)
 
-                                for (i in 1 until count) {
+                                for (i in 0 until count) {
                                     val uri = clipData.getItemAt(i).uri
-                                    secondaryImagesPaths.add(uri)
+                                    imagesPaths.add(uri)
                                 }
                                 showSecondaryImages()
                             }
@@ -166,8 +154,8 @@ class TempAddApartmentActivity : AppCompatActivity() {
         }
     }
 
-    private fun showImageOnMainImage() {
-        mainImagePath?.let {
+    private fun showImageOnMainImage(imagePath: Uri?) {
+        imagePath?.let {
             val bitmap = getBitmapFromUri(it)
             mainImage.setImageBitmap(bitmap)
         }
@@ -175,7 +163,7 @@ class TempAddApartmentActivity : AppCompatActivity() {
 
     private fun showSecondaryImages() {
         val secondaryBitmapDrawables = ArrayList<Drawable>()
-        secondaryImagesPaths.forEach {
+        imagesPaths.forEach {
             val bitmap = getBitmapFromUri(it)
             secondaryBitmapDrawables.add(BitmapDrawable(bitmap))
         }

@@ -7,9 +7,10 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.carservice.R
 import com.example.carservice.glide.GlideApp
+import com.example.carservice.ui.fragments.apartmentFragments.ApartmentFragment
 import com.google.firebase.storage.StorageReference
 
-class GliderSecondaryImagesAdapter :
+class GliderSecondaryImagesAdapter(val apartmentFragment: ApartmentFragment) :
     RecyclerView.Adapter<GliderSecondaryImagesAdapter.GliderSecondaryImagesViewHolder>() {
 
     private var images = ArrayList<StorageReference>()
@@ -37,12 +38,21 @@ class GliderSecondaryImagesAdapter :
         notifyDataSetChanged()
     }
 
-    class GliderSecondaryImagesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class GliderSecondaryImagesViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
 
         private var image: ImageView = itemView.findViewById(R.id.secondary_image_view)
 
         fun setData(storageReference: StorageReference) {
             GlideApp.with(image.context).load(storageReference).into(image)
+
+            initUI(storageReference)
+        }
+
+        private fun initUI(storageReference: StorageReference) {
+            image.setOnClickListener {
+                apartmentFragment.changeMainImage(storageReference)
+            }
         }
     }
 }

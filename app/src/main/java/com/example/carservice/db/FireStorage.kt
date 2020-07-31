@@ -9,19 +9,11 @@ object FireStorage {
 
     private val storageReference = FirebaseStorage.getInstance().reference
 
-    fun uploadMainImageByUri(uri: Uri, countDownLatch: CountDownLatch, apartment: Apartment) {
+    fun uploadImageByUri(uri: Uri, countDownLatch: CountDownLatch, apartment: Apartment) {
         val currentImageReference = storageReference.child("images/${uri.lastPathSegment}")
         currentImageReference.putFile(uri)
 
-        apartment.imagePath = currentImageReference.path
-        countDownLatch.countDown()
-    }
-
-    fun uploadImageByUri(uri: Uri, countDownLatch: CountDownLatch, apartment: Apartment) {
-        val currentImageReference = storageReference.child("images/${uri.lastPathSegment}")
-        val uploadTask = currentImageReference.putFile(uri)
-
-        apartment.secondaryImagesPaths.add(currentImageReference.path)
+        apartment.imagesPaths.add(currentImageReference.path)
         countDownLatch.countDown()
     }
 }
