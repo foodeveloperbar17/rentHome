@@ -39,17 +39,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/bottom_navigation_menu" />
 
-        <Button
-            android:id="@+id/open_apartment_activity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="20dp"
-            android:onClick="startAddApartmentActivity"
-            android:text="add apartment"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ProgressBar
             android:id="@+id/loading_progress_bar"
             style="@style/Widget.AppCompat.ProgressBar"
@@ -69,6 +58,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/colorPrimary"
+        app:itemTextColor="@color/places_text_white_alpha_87"
         android:fitsSystemWindows="true"
         app:menu="@menu/navigation_menu" />
 

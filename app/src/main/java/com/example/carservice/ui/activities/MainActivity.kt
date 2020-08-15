@@ -84,8 +84,7 @@ class MainActivity : AppCompatActivity() {
         leftNavigationView.menu.iterator().forEach {
             centerMenuItem(it)
         }
-//        this is a xack
-        leftNavigationView.menu.getItem(0).subMenu.children.forEach {
+        leftNavigationView.menu.findItem(R.id.language_menu_item).subMenu.children.forEach {
             centerMenuItem(it)
         }
     }
@@ -133,6 +132,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.parameters_menu_item_id -> {
 
+                }
+                R.id.show_my_apartments_menu_item_id -> {
+//                    to do: add show my apartments
+                }
+                R.id.add_apartment_menu_item_id -> {
+                    startAddApartmentActivity()
                 }
                 R.id.log_in_menu_item_id -> {
                     promptUserSignIn()
@@ -221,6 +226,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUIForUser(user: User) {
+        println(user)
+        println(user.userRole)
         val fragments = supportFragmentManager.fragments
         if (fragments.size > 0) {
             val lastFragment = fragments[fragments.size - 1]
@@ -231,6 +238,17 @@ class MainActivity : AppCompatActivity() {
         val badge = bottomNavigationView.getOrCreateBadge(R.id.favourite_menu_id)
         badge.isVisible = true
         badge.number = user.favourites.size
+
+        updateNavigationMenuItems(user)
+    }
+
+    private fun updateNavigationMenuItems(user: User) {
+        if (user.userRole == "admin" || user.userRole == "owner") {
+            leftNavigationView.menu.findItem(R.id.show_my_apartments_menu_item_id).isVisible = true
+        }
+        if (user.userRole == "admin") {
+            leftNavigationView.menu.findItem(R.id.add_apartment_menu_item_id).isVisible = true
+        }
     }
 
     fun addCountToBadge() {
@@ -303,7 +321,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //    admin
-    fun startAddApartmentActivity(view: View) {
+    private fun startAddApartmentActivity() {
         val intent = Intent(this, AdminAddApartmentActivity::class.java)
         startActivity(intent)
     }

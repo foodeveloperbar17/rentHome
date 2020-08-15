@@ -137,7 +137,7 @@ object FireDatabase {
             data["email"] as String?,
             data["pid"] as String?,
             favourites,
-            "user",
+            data["userRole"] as String,
             null
         )
     }

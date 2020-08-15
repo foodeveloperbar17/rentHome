@@ -43,7 +43,7 @@ class SmallMapFragment : Fragment(),
         val tbilisi = LatLng(41.73, 44.77)
         this.googleMap = googleMap
 //        googleMap.addMarker(MarkerOptions().position(tbilisi).title("Marker in Tbilisi"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(apartment.location, 10F))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(apartment.location, 13F))
 
         googleMap.setOnMarkerClickListener(this)
 

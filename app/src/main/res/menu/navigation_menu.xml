@@ -26,6 +26,16 @@
         android:title="parameters" />
 
     <item
+        android:id="@+id/show_my_apartments_menu_item_id"
+        android:title="my apartments"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/add_apartment_menu_item_id"
+        android:title="add apartment"
+        android:visible="false" />
+
+    <item
         android:id="@+id/log_in_menu_item_id"
         android:title="log in"
         android:visible="true" />
