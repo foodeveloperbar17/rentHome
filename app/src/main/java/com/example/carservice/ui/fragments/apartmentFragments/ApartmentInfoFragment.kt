@@ -18,6 +18,9 @@ import com.example.carservice.presenters.MainActivityPresenter
 import com.google.android.material.datepicker.*
 
 class ApartmentInfoFragment : Fragment() {
+    companion object{
+        const val TAG = "APARTMENT_INFO_TAG"
+    }
 
     private lateinit var priceTextView: TextView
     private lateinit var descriptionTextView: TextView

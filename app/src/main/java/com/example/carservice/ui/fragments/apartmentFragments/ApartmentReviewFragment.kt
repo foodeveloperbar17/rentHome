@@ -14,6 +14,9 @@ import com.example.carservice.presenters.MainActivityPresenter
 import com.example.carservice.ui.adapters.ReviewsAdapter
 
 class ApartmentReviewFragment : Fragment() {
+    companion object{
+        const val TAG = "APARTMENT_REVIEW_TAG"
+    }
 
     private lateinit var reviewsRecyclerView: RecyclerView
     private lateinit var reviewsAdapter: ReviewsAdapter

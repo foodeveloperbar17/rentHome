@@ -11,6 +11,10 @@ import com.example.carservice.models.User
 import com.google.android.material.button.MaterialButton
 
 class ProfileFragment : Fragment() {
+    companion object{
+        const val TAG = "PROFILE_TAG"
+    }
+
     private lateinit var profileImage: ImageView
 
     private lateinit var activeRentButton: MaterialButton

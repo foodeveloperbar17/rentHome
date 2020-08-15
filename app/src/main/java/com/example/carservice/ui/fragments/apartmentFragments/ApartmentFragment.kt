@@ -13,6 +13,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.carservice.R
 import com.example.carservice.glide.GlideApp
 import com.example.carservice.models.Apartment
+import com.example.carservice.ui.activities.MainActivity
 import com.example.carservice.ui.adapters.ApartmentFragmentStateAdapter
 import com.example.carservice.ui.adapters.GliderSecondaryImagesAdapter
 import com.google.android.material.tabs.TabLayout
@@ -30,6 +31,8 @@ class ApartmentFragment : Fragment() {
             R.string.reviews_tab_name
         )
         const val NUM_TABS = 4
+
+        const val TAG = "APARTMENT_TAG"
     }
 
     private lateinit var mainImage: ImageView
@@ -82,6 +85,7 @@ class ApartmentFragment : Fragment() {
     }
 
     private fun displayModel() {
+        (activity as MainActivity).setToolbarTitle(apartment.name)
         apartment.imagesPaths.first().let {
             GlideApp.with(this).load(createStorageReferenceFromString(it))
                 .into(mainImage)

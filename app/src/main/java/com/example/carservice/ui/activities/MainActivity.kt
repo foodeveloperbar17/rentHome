@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.feed_menu_id -> {
-                    replaceFragment(ApartmentsFeedFragment())
+                    replaceFragment(ApartmentsFeedFragment(), ApartmentsFeedFragment.TAG)
                 }
                 R.id.favourite_menu_id -> {
                     MainActivityPresenter.favouritesButtonClicked()
@@ -148,24 +148,23 @@ class MainActivity : AppCompatActivity() {
     private fun displayDefaultFragment() {
         val fragments = supportFragmentManager.fragments
         if (fragments.size == 0) {
-            replaceFragment(ApartmentsFeedFragment())
+            replaceFragmentWithoutBackStack(ApartmentsFeedFragment())
         }
     }
 
     fun showFavouritesFragment(favouriteApartments: ArrayList<Apartment>?) {
-        val favouritesFragment =
-            FavouritesFragment()
-        replaceFragment(favouritesFragment)
+        val favouritesFragment = FavouritesFragment()
+        replaceFragment(favouritesFragment, FavouritesFragment.TAG)
         favouritesFragment.setApartments(favouriteApartments)
     }
 
     fun showProfileFragment(user: User) {
         val profileFragment = ProfileFragment()
-        replaceFragment(profileFragment)
+        replaceFragment(profileFragment, ProfileFragment.TAG)
         profileFragment.setUser(user)
     }
 
-    private fun replaceFragment(fragment: Fragment) {
+    private fun replaceFragment(fragment: Fragment, tag: String) {
         supportFragmentManager.beginTransaction().replace(
             R.id.fragment_container_id,
             fragment
@@ -183,16 +182,8 @@ class MainActivity : AppCompatActivity() {
         val apartmentFragment = ApartmentFragment()
         apartmentFragment.setApartment(apartment)
         showBackArrow(true)
-        setToolbarTitle(apartment.name ?: "Apartment")
 
-        val fragments = supportFragmentManager.fragments
-        if (fragments.size > 0) {
-            if (fragments.last() is ApartmentFragment) {
-                replaceFragmentWithoutBackStack(apartmentFragment)
-            } else {
-                replaceFragment(apartmentFragment)
-            }
-        }
+        replaceFragment(apartmentFragment, ApartmentFragment.TAG)
     }
 
     fun promptUserSignIn() {
@@ -239,9 +230,7 @@ class MainActivity : AppCompatActivity() {
         }
         val badge = bottomNavigationView.getOrCreateBadge(R.id.favourite_menu_id)
         badge.isVisible = true
-        user.favourites?.let {
-            badge.number = it.size
-        }
+        badge.number = user.favourites.size
     }
 
     fun addCountToBadge() {
@@ -295,16 +284,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setToolbarTitle(title: String) {
+    fun setToolbarTitle(title: String) {
         supportActionBar?.title = title
     }
 
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 1) {
-            supportFragmentManager.popBackStack()
-        } else {
-            super.onBackPressed()
+        super.onBackPressed();
+        if (supportFragmentManager.fragments.last() !is ApartmentFragment) {
+            showBackArrow(false)
         }
     }
 
@@ -314,7 +302,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    //    temp
+    //    admin
     fun startAddApartmentActivity(view: View) {
         val intent = Intent(this, AdminAddApartmentActivity::class.java)
         startActivity(intent)

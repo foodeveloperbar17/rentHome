@@ -13,6 +13,11 @@ import com.example.carservice.models.Apartment
 import com.example.carservice.ui.adapters.ApartmentsAdapter
 
 class FavouritesFragment : Fragment() {
+
+    companion object{
+        const val TAG = "FAVOURITES_TAG"
+    }
+
     private lateinit var apartmentsRecyclerView: RecyclerView
     private lateinit var apartmentsAdapter: ApartmentsAdapter
     private lateinit var noFavouritesTextView: TextView

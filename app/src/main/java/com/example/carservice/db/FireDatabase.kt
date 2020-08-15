@@ -145,7 +145,7 @@ object FireDatabase {
     private fun getApartmentFromData(id: String, data: Map<String, Any>): Apartment {
         return Apartment(
             id,
-            data["name"] as String?,
+            data["name"] as String,
             data["description"] as String?,
             data["price"] as Double,
             LatLng(

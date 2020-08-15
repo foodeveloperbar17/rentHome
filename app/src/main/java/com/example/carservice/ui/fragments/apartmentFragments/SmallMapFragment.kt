@@ -20,6 +20,10 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class SmallMapFragment : Fragment(),
     GoogleMap.OnMarkerClickListener {
+    companion object{
+        const val TAG = "SMALL_MAP_TAG"
+    }
+
     private var apartments: ArrayList<Apartment>? = null
     private lateinit var apartment: Apartment
 

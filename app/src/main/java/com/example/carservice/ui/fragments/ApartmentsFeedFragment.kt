@@ -17,6 +17,10 @@ import com.example.carservice.presenters.MainActivityPresenter
 import com.example.carservice.ui.adapters.ApartmentsAdapter
 
 class ApartmentsFeedFragment : Fragment() {
+    companion object{
+        const val TAG = "APARTMENTS_FEED_TAG"
+    }
+
     private lateinit var apartmentsRecyclerView: RecyclerView
     private lateinit var apartmentsAdapter: ApartmentsAdapter
 

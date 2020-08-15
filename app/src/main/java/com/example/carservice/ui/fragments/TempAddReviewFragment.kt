@@ -19,6 +19,9 @@ import com.google.firebase.firestore.model.ServerTimestamps
 import java.util.*
 
 class TempAddReviewFragment : Fragment() {
+    companion object{
+        const val TAG = "ADD_REVIEW_TAG"
+    }
 
     private lateinit var apartment: Apartment
 
