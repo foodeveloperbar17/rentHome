@@ -1,4 +1,4 @@
-package com.example.carservice.ui.activities
+package com.example.carservice.admin
 
 import android.Manifest
 import android.app.Activity
@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -29,10 +28,11 @@ import com.google.android.gms.maps.model.LatLng
 import java.util.*
 import java.util.concurrent.CountDownLatch
 
-class TempAddApartmentActivity : AppCompatActivity() {
+class AdminAddApartmentActivity : AppCompatActivity() {
 
     private lateinit var saveApartmentButton: Button
     private lateinit var uploadImagesButton: Button
+    private lateinit var chooseCoordsOnMap: Button
 
     private lateinit var mainImage: ImageView
     private lateinit var secondaryImageRecyclerView: RecyclerView
@@ -59,6 +59,7 @@ class TempAddApartmentActivity : AppCompatActivity() {
     private fun initUI() {
         saveApartmentButton = findViewById(R.id.add_apartment_button)
         uploadImagesButton = findViewById(R.id.upload_images)
+        chooseCoordsOnMap = findViewById(R.id.choose_coords_on_map_button)
 
         mainImage = findViewById(R.id.upload_main_image_view)
         initRecyclerView()
@@ -86,7 +87,8 @@ class TempAddApartmentActivity : AppCompatActivity() {
             val price = priceEditText.text.toString().toDouble()
             val lat = latTextView.text.toString().toDouble()
             val lng = lngTextView.text.toString().toDouble()
-            val apartment = Apartment(null, name, description, price, LatLng(lat, lng))
+            val apartment =
+                Apartment(UUID.randomUUID().toString(), name, description, price, LatLng(lat, lng))
             Thread {
                 imagesPaths.forEach {
                     FireStorage.uploadImageByUri(it, countDownLatch, apartment)
@@ -109,6 +111,18 @@ class TempAddApartmentActivity : AppCompatActivity() {
                 }
             }
         }
+
+        chooseCoordsOnMap.setOnClickListener {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.choose_coords_frame_layout, ChooseCoordsFragment())
+                .addToBackStack(null).commit()
+        }
+    }
+
+    fun coordsChosen(latLng: LatLng) {
+        latTextView.setText("${latLng.latitude}")
+        lngTextView.setText("${latLng.longitude}")
+        supportFragmentManager.popBackStack()
     }
 
     private fun initializeForWorker() {
@@ -121,7 +135,10 @@ class TempAddApartmentActivity : AppCompatActivity() {
         intent.action = Intent.ACTION_GET_CONTENT
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        startActivityForResult(intent, RC_ADD_IMAGE)
+        startActivityForResult(
+            intent,
+            RC_ADD_IMAGE
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

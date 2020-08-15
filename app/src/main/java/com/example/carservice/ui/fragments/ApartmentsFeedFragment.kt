@@ -29,7 +29,7 @@ class ApartmentsFeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initUI(view)
-        MainActivityPresenter.onViewCreated(this)
+        MainActivityPresenter.onApartmentsFeedFragmentCreated(this)
         MainActivityPresenter.fetchData()
     }
 
@@ -50,19 +50,16 @@ class ApartmentsFeedFragment : Fragment() {
     }
 
     fun updateUIForUser(user: User) {
-        user.favourites?.let {favourites ->
-            val favouritesSet = favourites.keys
-            val apartments = apartmentsAdapter.getData()
-            apartments.forEach {
-                it.isFavouriteForCurrentUser = favouritesSet.contains(it.uuid)
-            }
-            apartmentsAdapter.setData(apartments)
+        val apartments = apartmentsAdapter.getData()
+        apartments.forEach {
+            it.isFavouriteForCurrentUser = user.favourites.contains(it.uuid)
         }
+        apartmentsAdapter.setData(apartments)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        MainActivityPresenter.onFragmentDestroyed()
+        MainActivityPresenter.onApartmentsFeedFragmentDestroyed(this)
     }
 
 

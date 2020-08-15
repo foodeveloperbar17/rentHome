@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.TempAddApartmentActivity">
+    tools:context=".admin.AdminAddApartmentActivity">
 
     <TextView
         android:id="@+id/add_apartment_text_view_id"
@@ -42,20 +42,34 @@
 
     <EditText
         android:id="@+id/lat_edit_text"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:hint="lat"
-        app:layout_constraintTop_toBottomOf="@+id/price_edit_text" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/price_edit_text"
+        app:layout_constraintWidth_percent="0.5" />
 
 
     <EditText
         android:id="@+id/lng_edit_text"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:hint="lng"
-        app:layout_constraintTop_toBottomOf="@+id/lat_edit_text" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lat_edit_text"
+        app:layout_constraintWidth_percent="0.5" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/choose_coords_on_map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="choose on map"
+        app:layout_constraintBottom_toBottomOf="@+id/lng_edit_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/lat_edit_text"
+        app:layout_constraintTop_toTopOf="@+id/lat_edit_text" />
 
     <Button
         android:id="@+id/upload_images"
@@ -84,5 +98,10 @@
         android:layout_height="wrap_content"
         android:text="add apartment"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/choose_coords_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

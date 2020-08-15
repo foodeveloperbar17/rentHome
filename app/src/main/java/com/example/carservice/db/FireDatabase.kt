@@ -2,14 +2,14 @@ package com.example.carservice.db
 
 import android.util.Log
 import com.example.carservice.R
-import com.example.carservice.models.Apartment
-import com.example.carservice.models.Rent
-import com.example.carservice.models.User
+import com.example.carservice.models.*
 import com.example.carservice.presenters.MainActivityPresenter
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.maps.model.PlaceDetails
 import java.lang.RuntimeException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -29,9 +29,7 @@ object FireDatabase {
     private var apartments: ArrayList<Apartment>? = null
 
     fun addApartment(apartment: Apartment) {
-        val randomUUID = UUID.randomUUID().toString()
-        apartment.uuid = randomUUID
-        apartmentsRef.document(randomUUID).set(apartment)
+        apartmentsRef.document(apartment.uuid).set(apartment)
     }
 
     fun fetchApartments() {
@@ -54,28 +52,36 @@ object FireDatabase {
                 fetchedApartments.add(apartment)
             }
 
-            currentUser?.favourites?.let { favouritesMap ->
-                fetchedApartments.forEach {
-                    it.isFavouriteForCurrentUser = favouritesMap.containsKey(it.uuid)
-                }
+            fetchedApartments.forEach {
+                it.isFavouriteForCurrentUser = currentUser?.favourites?.contains(it.uuid) ?: false
             }
             apartments = fetchedApartments
             MainActivityPresenter.apartmentsFetched(fetchedApartments)
         }
     }
 
+    fun fetchApartmentReviews(apartment: Apartment) {
+        val reviewsRef = apartmentsRef.document(apartment.uuid).collection("reviews")
+        reviewsRef.get().addOnSuccessListener {
+            val fetchedReviews = ArrayList<Review>()
+            it.forEach { document ->
+                fetchedReviews.add(getReviewFromData(document.data))
+            }
+            MainActivityPresenter.reviewsFetched(apartment, fetchedReviews)
+        }
+    }
+
     fun addFavouriteApartment(apartment: Apartment) {
         apartment.isFavouriteForCurrentUser = true
-        currentUser!!.favourites ?: run {
-            currentUser!!.favourites = HashMap()
+        if (!currentUser!!.favourites.contains(apartment.uuid)) {
+            currentUser!!.favourites.add(apartment.uuid)
+            currentUserRef!!.set(currentUser!!)
         }
-        currentUser!!.favourites!![apartment.uuid!!] = apartment
-        currentUserRef!!.set(currentUser!!)
     }
 
     fun removeFavouriteApartment(apartment: Apartment) {
         apartment.isFavouriteForCurrentUser = false
-        currentUser!!.favourites!!.remove(apartment.uuid)
+        currentUser!!.favourites.remove(apartment.uuid)
         currentUserRef!!.set(currentUser!!)
     }
 
@@ -115,20 +121,15 @@ object FireDatabase {
                 signInNewUser(user)
             }
             MainActivityPresenter.userFetchFinishedSuccessfully("successfully", currentUser!!)
-        }.addOnFailureListener { exception ->
-            Log.d(TAG, "exception during init curr user $exception")
+        }.addOnFailureListener {
             MainActivityPresenter.userFetchFinishedFailed("unsuccessful")
         }
     }
 
     private fun initUserFromData(data: Map<String, Any>): User {
-        val favourites: HashMap<String, Apartment>? = HashMap()
-        val favouritesMap = data["favourites"] as HashMap<String, HashMap<String, String>>?
-        favouritesMap?.forEach {
-            val apartment = getApartmentFromData(it.key, it.value)
-            apartment.isFavouriteForCurrentUser = true
-            favourites!![it.key] = apartment
-        }
+        val favouritesList = data["favourites"] as ArrayList<String>?
+        val favourites = favouritesList?.let { ArrayList(it) } ?: kotlin.run { ArrayList<String>() }
+
         return User(
             data["uid"] as String,
             data["name"] as String,
@@ -136,9 +137,8 @@ object FireDatabase {
             data["email"] as String?,
             data["pid"] as String?,
             favourites,
-            data["rentHistory"]?.let {
-                it as ArrayList<Long>
-            } ?: kotlin.run { ArrayList<Long>() }
+            "user",
+            null
         )
     }
 
@@ -153,25 +153,51 @@ object FireDatabase {
                 (data["location"] as Map<String, Double>).getOrElse("longitude") { 0.0 }
             ),
             data["imagesPaths"] as ArrayList<String>,
-            data.getOrElse("userRating") { 0.0 } as Double,
-            data.getOrElse("overallRating") { 0.0 } as Double,
+            data["numReviews"] as Long,
+            data["numRented"] as Long,
+            (data["userRating"] as Number).toDouble(),
+            (data["overAllRating"] as Number).toDouble(),
             data["rentHistory"]?.let {
                 it as ArrayList<Long>
             } ?: kotlin.run { ArrayList<Long>() }
         )
     }
 
-    fun saveRent(rent: Rent, apartment: Apartment, user: User) {
+    private fun getReviewFromData(data: Map<String, Any>): Review {
+        return Review(
+            data["uid"] as String,
+            data["userReview"] as String,
+            (data["numStars"] as Long).toInt(),
+            data["userName"] as String,
+            (data["creationDate"] as Timestamp).toDate()
+        )
+    }
+
+    fun saveRent(
+        rent: Rent,
+        apartment: Apartment,
+        user: User,
+        userRentHistoryModel: UserRentHistoryModel
+    ) {
         val rentRef = rentsRef.document(rent.uid)
-        val apartmentRef = apartmentsRef.document(apartment.uuid!!)
+        val apartmentRef = apartmentsRef.document(apartment.uuid)
         val userRef = usersRef.document(user.uid)
+        val userRentHistoryRef =
+            userRef.collection("rentHistory").document(userRentHistoryModel.uid)
         FirebaseFirestore.getInstance().runBatch {
             it.set(rentRef, rent)
             it.set(apartmentRef, apartment)
-            it.set(userRef, user)
+//            it.set(userRef, user)
+            it.set(userRentHistoryRef, userRentHistoryModel)
         }.addOnCompleteListener {
             MainActivityPresenter.successfullyRented()
         }
+    }
+
+    fun saveReview(apartment: Apartment, review: Review) {
+        val reviewRef = apartmentsRef.document(apartment.uuid)
+            .collection("reviews").document(review.uid)
+        reviewRef.set(review)
     }
 
     fun getCurrentUser(): User? {

@@ -6,6 +6,7 @@ data class User(
     var phoneNumber: String?,
     var email: String?,
     var pid: String?,
-    var favourites: HashMap<String, Apartment>?,
-    val rentHistory: ArrayList<Long> = ArrayList()
+    var favourites: ArrayList<String>,
+    var userRole: String,
+    var rentHistory: ArrayList<UserRentHistoryModel>?
 )

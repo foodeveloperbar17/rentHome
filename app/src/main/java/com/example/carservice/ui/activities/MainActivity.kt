@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.text.Layout
 import android.text.SpannableString
 import android.text.style.AlignmentSpan
-import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -16,11 +14,11 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
-import androidx.core.view.get
 import androidx.core.view.iterator
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.example.carservice.R
+import com.example.carservice.admin.AdminAddApartmentActivity
 import com.example.carservice.db.FireDatabase
 import com.example.carservice.models.Apartment
 import com.example.carservice.models.User
@@ -219,7 +217,7 @@ class MainActivity : AppCompatActivity() {
                 val newUser = User(firebaseUser.uid,
                     firebaseUser.displayName.let { firebaseUser.displayName } ?: run { "carieli" },
                     firebaseUser.phoneNumber,
-                    firebaseUser.email, null, null
+                    firebaseUser.email, null, ArrayList<String>(), "user", null
                 )
                 FireDatabase.createOrFetchUser(newUser)
             }
@@ -318,7 +316,7 @@ class MainActivity : AppCompatActivity() {
 
     //    temp
     fun startAddApartmentActivity(view: View) {
-        val intent = Intent(this, TempAddApartmentActivity::class.java)
+        val intent = Intent(this, AdminAddApartmentActivity::class.java)
         startActivity(intent)
     }
 

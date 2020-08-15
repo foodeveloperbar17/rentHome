@@ -4,12 +4,11 @@ import android.widget.CompoundButton
 import android.widget.ToggleButton
 import com.example.carservice.R
 import com.example.carservice.db.FireDatabase
-import com.example.carservice.models.Apartment
-import com.example.carservice.models.Rent
-import com.example.carservice.models.User
+import com.example.carservice.models.*
 import com.example.carservice.ui.activities.MainActivity
 import com.example.carservice.ui.fragments.ApartmentsFeedFragment
 import com.example.carservice.ui.fragments.apartmentFragments.ApartmentInfoFragment
+import com.example.carservice.ui.fragments.apartmentFragments.ApartmentReviewFragment
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -20,6 +19,7 @@ import kotlin.collections.ArrayList
 object MainActivityPresenter {
     private var mainActivity: MainActivity? = null
     private var apartmentsFeedFragment: ApartmentsFeedFragment? = null
+    private var reviewFragment: ApartmentReviewFragment? = null
 
     fun onActivityCreated(mainActivity: MainActivity) {
         this.mainActivity = mainActivity
@@ -30,8 +30,12 @@ object MainActivityPresenter {
         }
     }
 
-    fun onViewCreated(apartmentsFeedFragment: ApartmentsFeedFragment) {
+    fun onApartmentsFeedFragmentCreated(apartmentsFeedFragment: ApartmentsFeedFragment) {
         this.apartmentsFeedFragment = apartmentsFeedFragment
+    }
+
+    fun onReviewFragmentCreated(reviewFragment: ApartmentReviewFragment) {
+        this.reviewFragment = reviewFragment
     }
 
     fun fetchData() {
@@ -42,8 +46,12 @@ object MainActivityPresenter {
         this.apartmentsFeedFragment?.showApartments(fetchedApartments)
     }
 
-    fun onFragmentDestroyed() {
-        apartmentsFeedFragment = null
+    fun fetchApartmentReviews(apartment: Apartment) {
+        FireDatabase.fetchApartmentReviews(apartment)
+    }
+
+    fun reviewsFetched(apartment: Apartment, reviews: ArrayList<Review>) {
+        reviewFragment?.reviewsFetchedForApartment(apartment, reviews)
     }
 
     fun apartmentClicked(apartment: Apartment) {
@@ -73,8 +81,15 @@ object MainActivityPresenter {
         if (FirebaseAuth.getInstance().currentUser == null) {
             mainActivity?.promptUserSignIn()
         } else {
-            val favouritesCollection = FireDatabase.getCurrentUser()?.favourites?.values
-            mainActivity?.showFavouritesFragment(ArrayList(favouritesCollection))
+            val favouritesIdsCollection = FireDatabase.getCurrentUser()?.favourites
+            val allApartments = FireDatabase.getFetchedApartments()
+            var favouriteApartments = ArrayList<Apartment>()
+            favouritesIdsCollection?.let { collection ->
+                favouriteApartments = ArrayList(allApartments.filter { apartment ->
+                    collection.contains(apartment.uuid)
+                })
+            }
+            mainActivity?.showFavouritesFragment(ArrayList(favouriteApartments))
         }
     }
 
@@ -97,17 +112,32 @@ object MainActivityPresenter {
     fun dateChosen(date: Long, apartment: Apartment, user: User) {
         val rentDays = ArrayList<Long>()
         rentDays.add(date)
+        val moneySpent = rentDays.size * apartment.price
         val rent = Rent(
             UUID.randomUUID().toString(),
             user,
             apartment,
             rentDays,
-            rentDays.size * apartment.price
+            moneySpent
         )
         apartment.rentHistory.addAll(rentDays)
-        user.rentHistory.addAll(rentDays)
-        FireDatabase.saveRent(rent, apartment, user)
+        val rentHistoryModel = UserRentHistoryModel(
+            UUID.randomUUID().toString(),
+            user.uid,
+            apartment.uuid,
+            apartment.name.orEmpty(),
+            apartment.description.orEmpty(),
+            moneySpent,
+            rentDays.size,
+            rentDays
+        )
+        user.rentHistory ?: kotlin.run {
+            user.rentHistory = ArrayList<UserRentHistoryModel>()
+        }
+        user.rentHistory!!.add(rentHistoryModel)
+        FireDatabase.saveRent(rent, apartment, user, rentHistoryModel)
     }
+
 
     fun successfullyRented() {
         mainActivity?.makeToast("successfully rented")
@@ -119,6 +149,18 @@ object MainActivityPresenter {
 
     fun userFetchFinishedFailed(status: String) {
         mainActivity?.signInFinished(status)
+    }
+
+    fun onApartmentReviewFragmentDestroyed(apartmentReviewFragment: ApartmentReviewFragment) {
+        if (reviewFragment == apartmentReviewFragment) {
+            reviewFragment = null
+        }
+    }
+
+    fun onApartmentsFeedFragmentDestroyed(apartmentsFeedFragment: ApartmentsFeedFragment) {
+        if (this.apartmentsFeedFragment == apartmentsFeedFragment) {
+            this.apartmentsFeedFragment = null
+        }
     }
 
     fun onActivityDestroyed() {

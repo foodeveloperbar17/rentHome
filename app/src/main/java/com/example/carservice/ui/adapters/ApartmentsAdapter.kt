@@ -70,6 +70,8 @@ class ApartmentsAdapter : RecyclerView.Adapter<ApartmentsAdapter.ApartmentsHolde
 //            layerDrawable.getDrawable(0).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP)
             layerDrawable.getDrawable(1).setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP)
 
+            ratingBar.rating = apartment.userRating.toFloat()
+
             rootView.setOnClickListener {
                 MainActivityPresenter.apartmentClicked(apartment)
             }
